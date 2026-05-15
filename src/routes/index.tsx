@@ -1,26 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Layout } from "@/components/Layout";
+import { DesktopHeaderSlider } from "@/components/DesktopHeaderSlider";
+import { DailyThought } from "@/components/DailyThought";
+import { ServicesGrid } from "@/components/ServicesGrid";
+import { LibraryCarousel } from "@/components/LibraryCarousel";
+import { RecentArticles } from "@/components/RecentArticles";
+import { UpcomingEvents } from "@/components/UpcomingEvents";
+import { StatsSection } from "@/components/StatsSection";
+import { NewsletterPopup } from "@/components/NewsletterPopup";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MCSF — Mission Christ Sans Frontière" },
+      { name: "description", content: "Site officiel de la Mission Christ Sans Frontière (MCSF) du Pasteur ADAM Aboudaminou. Enseignements, podcasts, livres, Bible et événements." },
+      { property: "og:title", content: "MCSF — Mission Christ Sans Frontière" },
+      { property: "og:description", content: "Une mission chrétienne consacrée à la prédication de l'Évangile et à la révélation parfaite." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <Layout>
+      <DesktopHeaderSlider />
+      <DailyThought />
+      <ServicesGrid />
+      <LibraryCarousel />
+      <RecentArticles />
+      <StatsSection />
+      <UpcomingEvents />
+      <NewsletterPopup />
+    </Layout>
+  );
 }
