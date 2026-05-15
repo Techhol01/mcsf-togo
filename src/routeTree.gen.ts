@@ -9,8 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as PodcastRouteImport } from './routes/podcast'
+import { Route as ForumRouteImport } from './routes/forum'
+import { Route as EvenementsRouteImport } from './routes/evenements'
+import { Route as EnseignementRouteImport } from './routes/enseignement'
+import { Route as DonRouteImport } from './routes/don'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BibliothequeRouteImport } from './routes/bibliotheque'
+import { Route as BibleRouteImport } from './routes/bible'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastRoute = PodcastRouteImport.update({
+  id: '/podcast',
+  path: '/podcast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumRoute = ForumRouteImport.update({
+  id: '/forum',
+  path: '/forum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvenementsRoute = EvenementsRouteImport.update({
+  id: '/evenements',
+  path: '/evenements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnseignementRoute = EnseignementRouteImport.update({
+  id: '/enseignement',
+  path: '/enseignement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonRoute = DonRouteImport.update({
+  id: '/don',
+  path: '/don',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BibliothequeRoute = BibliothequeRouteImport.update({
+  id: '/bibliotheque',
+  path: '/bibliotheque',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BibleRoute = BibleRouteImport.update({
+  id: '/bible',
+  path: '/bible',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +79,172 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/bible': typeof BibleRoute
+  '/bibliotheque': typeof BibliothequeRoute
+  '/blog': typeof BlogRoute
+  '/don': typeof DonRoute
+  '/enseignement': typeof EnseignementRoute
+  '/evenements': typeof EvenementsRoute
+  '/forum': typeof ForumRoute
+  '/podcast': typeof PodcastRoute
+  '/profil': typeof ProfilRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/bible': typeof BibleRoute
+  '/bibliotheque': typeof BibliothequeRoute
+  '/blog': typeof BlogRoute
+  '/don': typeof DonRoute
+  '/enseignement': typeof EnseignementRoute
+  '/evenements': typeof EvenementsRoute
+  '/forum': typeof ForumRoute
+  '/podcast': typeof PodcastRoute
+  '/profil': typeof ProfilRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/bible': typeof BibleRoute
+  '/bibliotheque': typeof BibliothequeRoute
+  '/blog': typeof BlogRoute
+  '/don': typeof DonRoute
+  '/enseignement': typeof EnseignementRoute
+  '/evenements': typeof EvenementsRoute
+  '/forum': typeof ForumRoute
+  '/podcast': typeof PodcastRoute
+  '/profil': typeof ProfilRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/bible'
+    | '/bibliotheque'
+    | '/blog'
+    | '/don'
+    | '/enseignement'
+    | '/evenements'
+    | '/forum'
+    | '/podcast'
+    | '/profil'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/bible'
+    | '/bibliotheque'
+    | '/blog'
+    | '/don'
+    | '/enseignement'
+    | '/evenements'
+    | '/forum'
+    | '/podcast'
+    | '/profil'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/bible'
+    | '/bibliotheque'
+    | '/blog'
+    | '/don'
+    | '/enseignement'
+    | '/evenements'
+    | '/forum'
+    | '/podcast'
+    | '/profil'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  BibleRoute: typeof BibleRoute
+  BibliothequeRoute: typeof BibliothequeRoute
+  BlogRoute: typeof BlogRoute
+  DonRoute: typeof DonRoute
+  EnseignementRoute: typeof EnseignementRoute
+  EvenementsRoute: typeof EvenementsRoute
+  ForumRoute: typeof ForumRoute
+  PodcastRoute: typeof PodcastRoute
+  ProfilRoute: typeof ProfilRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcast': {
+      id: '/podcast'
+      path: '/podcast'
+      fullPath: '/podcast'
+      preLoaderRoute: typeof PodcastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum': {
+      id: '/forum'
+      path: '/forum'
+      fullPath: '/forum'
+      preLoaderRoute: typeof ForumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evenements': {
+      id: '/evenements'
+      path: '/evenements'
+      fullPath: '/evenements'
+      preLoaderRoute: typeof EvenementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/enseignement': {
+      id: '/enseignement'
+      path: '/enseignement'
+      fullPath: '/enseignement'
+      preLoaderRoute: typeof EnseignementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/don': {
+      id: '/don'
+      path: '/don'
+      fullPath: '/don'
+      preLoaderRoute: typeof DonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bibliotheque': {
+      id: '/bibliotheque'
+      path: '/bibliotheque'
+      fullPath: '/bibliotheque'
+      preLoaderRoute: typeof BibliothequeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bible': {
+      id: '/bible'
+      path: '/bible'
+      fullPath: '/bible'
+      preLoaderRoute: typeof BibleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +257,27 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  BibleRoute: BibleRoute,
+  BibliothequeRoute: BibliothequeRoute,
+  BlogRoute: BlogRoute,
+  DonRoute: DonRoute,
+  EnseignementRoute: EnseignementRoute,
+  EvenementsRoute: EvenementsRoute,
+  ForumRoute: ForumRoute,
+  PodcastRoute: PodcastRoute,
+  ProfilRoute: ProfilRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
