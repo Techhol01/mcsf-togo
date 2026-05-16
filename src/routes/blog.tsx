@@ -1,7 +1,100 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/ComingSoon";
+import { useState } from "react";
+import { Layout } from "@/components/Layout";
+import { ARTICLES } from "@/lib/content";
+import { Calendar, User, Tag, ArrowLeft, Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/blog")({
-  head: () => ({ meta: [{ title: "Blog — MCSF" }, { name: "description", content: "Articles du Pasteur ADAM Aboudaminou sur la révélation parfaite, l'Armageddon et la fin des temps." }] }),
-  component: () => <ComingSoon title="Blog" description="Articles, méditations et révélations du Pasteur ADAM Aboudaminou." />,
+  head: () => ({
+    meta: [
+      { title: "Blog — MCSF" },
+      { name: "description", content: "Articles du Pasteur ADAM Aboudaminou sur l'Armageddon, la fin du monde et la vie chrétienne." },
+    ],
+  }),
+  component: BlogPage,
 });
+
+const CATEGORIES = ["Tous", "Prophétie", "Révélation", "Eschatologie", "Vie chrétienne"];
+
+function BlogPage() {
+  const [cat, setCat] = useState("Tous");
+  const [active, setActive] = useState<(typeof ARTICLES)[number] | null>(null);
+  const list = cat === "Tous" ? ARTICLES : ARTICLES.filter((a) => a.category === cat);
+
+  if (active) {
+    return (
+      <Layout>
+        <article className="container-page max-w-3xl py-10">
+          <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+            <ArrowLeft className="h-4 w-4" /> Retour aux articles
+          </button>
+          <span className="inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
+          <h1 className="mt-3 font-display text-3xl font-bold text-foreground md:text-4xl">{active.title}</h1>
+          <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><User className="h-4 w-4" /> {active.author}</span>
+            <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" /> {new Date(active.date).toLocaleDateString("fr-FR")}</span>
+          </div>
+          <div className="prose-mcsf mt-6 space-y-4 leading-relaxed text-foreground/90">
+            <p className="text-lg font-medium">{active.excerpt}</p>
+            <p>L'Écriture sainte nous invite à la vigilance et à la persévérance. Le Pasteur ADAM Aboudaminou,
+              à travers cet enseignement, nous rappelle que les temps que nous vivons appellent à un retour
+              sincère vers Dieu et à une marche fidèle dans la foi.</p>
+            <p>« Veillez donc, car vous ne savez pas quel jour votre Seigneur viendra » (Matthieu 24:42).
+              Cette parole résonne avec une acuité particulière à l'approche des événements eschatologiques
+              annoncés dans la Parole.</p>
+            <p>Que le Seigneur Jésus-Christ affermisse nos cœurs et nous garde irréprochables jusqu'à son
+              avènement glorieux. Amen.</p>
+          </div>
+          <button
+            onClick={() => navigator.share?.({ title: active.title, url: window.location.href }).catch(() => {})}
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-flame px-5 py-2 text-sm font-semibold text-flame-foreground hover:opacity-90"
+          >
+            <Share2 className="h-4 w-4" /> Partager
+          </button>
+        </article>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <section className="bg-gradient-primary py-10 text-primary-foreground">
+        <div className="container-page">
+          <h1 className="font-display text-3xl font-bold md:text-4xl">Blog MCSF</h1>
+          <p className="mt-2 max-w-2xl text-primary-foreground/85">Articles d'enseignement et de prophétie biblique.</p>
+        </div>
+      </section>
+
+      <section className="container-page py-10">
+        <div className="mb-6 flex flex-wrap gap-2">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition ${cat === c ? "bg-primary text-primary-foreground" : "border border-border bg-card text-foreground hover:bg-accent"}`}
+            >
+              <Tag className="h-3 w-3" /> {c}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          {list.map((a) => (
+            <article key={a.id} className="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
+              <span className="inline-block w-fit rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{a.category}</span>
+              <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{a.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{a.excerpt}</p>
+              <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1"><User className="h-3 w-3" /> {a.author}</span>
+                <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.date).toLocaleDateString("fr-FR")}</span>
+              </div>
+              <button onClick={() => setActive(a)} className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                Lire l'article →
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+    </Layout>
+  );
+}
