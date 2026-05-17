@@ -44,8 +44,8 @@ function EvenementsPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {visible.map((e) => (
-            <article key={e.id} className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
-              <div className="aspect-[16/9] w-full overflow-hidden bg-muted">
+            <article key={e.id} className="overflow-hidden rounded-none border border-border bg-card shadow-soft">
+              <div className="aspect-square w-full overflow-hidden bg-muted">
                 <img src={eventImg} alt={e.title} className="h-full w-full object-cover" loading="lazy" />
               </div>
               <div className="p-5">
