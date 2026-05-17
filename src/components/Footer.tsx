@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Youtube, Instagram, Mail, MapPin, Phone } from "lucide-react";
-import logo from "@/assets/mcsf-logo.png";
+import logo from "@/assets/mcsf-logo-official.png";
 
 const RECENT_POSTS = [
   { to: "/blog", title: "L'Armageddon : ce que dit l'Écriture" },

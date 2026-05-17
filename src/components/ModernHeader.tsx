@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, Search, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/mcsf-logo.png";
+import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
 
 export function ModernHeader() {
