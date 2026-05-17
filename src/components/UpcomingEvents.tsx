@@ -15,7 +15,7 @@ export function UpcomingEvents() {
         <Link to="/evenements" className="text-sm font-semibold text-primary hover:text-flame">Plus →</Link>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <Link to="/evenements" className="group relative aspect-[16/10] overflow-hidden rounded-2xl shadow-soft md:aspect-auto md:row-span-2">
+        <Link to="/evenements" className="group relative aspect-[16/10] overflow-hidden rounded-none border border-border shadow-soft md:aspect-auto md:row-span-2">
           <img src={vupj} alt="VUPJ 2026" className="h-full w-full object-cover transition group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-hero" />
           <div className="absolute inset-x-0 bottom-0 p-5 text-primary-foreground">
@@ -28,7 +28,7 @@ export function UpcomingEvents() {
           </div>
         </Link>
         {upcoming.slice(1).map((e) => (
-          <Link key={e.id} to="/evenements" className="rounded-2xl border border-border bg-card p-5 transition hover:shadow-soft">
+          <Link key={e.id} to="/evenements" className="rounded-none border border-border bg-card p-5 transition hover:shadow-soft">
             <span className="rounded-full bg-flame/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-flame">À venir</span>
             <h3 className="mt-2 font-display text-lg font-bold">{e.title}</h3>
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{e.description}</p>

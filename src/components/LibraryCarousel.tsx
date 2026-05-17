@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { BookOpen } from "lucide-react";
 import { BOOKS } from "@/lib/content";
 
 export function LibraryCarousel() {
@@ -18,18 +19,21 @@ export function LibraryCarousel() {
           <Link
             key={b.id}
             to="/bibliotheque"
-            className="group w-44 shrink-0 snap-start sm:w-52"
+            className="group w-48 shrink-0 snap-start sm:w-56"
           >
-            <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-gradient-primary shadow-soft transition group-hover:scale-[1.02]">
+            <div className="relative aspect-square overflow-hidden rounded-none border border-border bg-gradient-primary shadow-soft transition group-hover:shadow-elegant">
               <div className="absolute inset-0 flex flex-col justify-between p-4 text-primary-foreground">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-flame">MCSF</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-flame">MCSF</span>
+                  <BookOpen className="h-5 w-5 opacity-80" />
+                </div>
                 <div>
-                  <div className="font-display text-lg font-bold leading-tight">{b.title}</div>
+                  <div className="font-display text-base font-bold leading-tight line-clamp-3">{b.title}</div>
                   <div className="mt-1 text-[11px] text-primary-foreground/80">{b.chapters} chapitres</div>
                 </div>
               </div>
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">{b.author}</div>
+            <div className="mt-2 text-xs font-medium text-foreground">{b.author}</div>
           </Link>
         ))}
       </div>

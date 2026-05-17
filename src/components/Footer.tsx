@@ -54,9 +54,9 @@ export function Footer() {
         <div>
           <h4 className="font-display text-sm font-bold uppercase tracking-wider">Contact</h4>
           <ul className="mt-4 space-y-3 text-sm text-primary-foreground/85">
-            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-flame" /> Notse, Togo — Centre Rehoboth</li>
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-flame" /> +228 00 00 00 00</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-flame" /> contact@mcsf.org</li>
+            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-flame" /><span>Notse, Togo — Centre Rehoboth</span></li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-flame" /><span>+228 00 00 00 00</span></li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-flame" /><span>contact@mcsf.org</span></li>
           </ul>
           <div className="mt-4 flex gap-3">
             <a href="#" aria-label="Facebook" className="rounded-full bg-white/10 p-2 hover:bg-flame"><Facebook className="h-4 w-4" /></a>
