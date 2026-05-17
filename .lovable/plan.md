@@ -1,56 +1,76 @@
-# Reconstruction du site MCSF
+## Refonte MCSF — Phase 3 (logo officiel + améliorations majeures)
 
-Reconstruction du site de la **Mission Christ Sans Frontière** (Pasteur ADAM Aboudaminou, Togo) à partir du brief original récupéré du projet `mcsf`.
+### 1. Logo officiel MCSF
+- Copier `user-uploads://image.png` → `src/assets/mcsf-logo-official.png`
+- Remplacer le logo généré dans `ModernHeader`, `Footer`, `SplashScreen`, `Layout`
 
-## Identité visuelle
-- Couleurs : bleu dégradé (fond), rouge flamme (CTA), blanc, noir
-- Style moderne, sobre, chaleureux, inspiré d'une app mobile
-- Typographie sans-serif élégante, responsive desktop/tablette/mobile
-- PWA installable
+### 2. Page d'accueil
+- **Bibliothèque (carrousel)** : cartes carrées (`aspect-square`, `rounded-none`), couvertures de livres générées (image par livre)
+- **Articles récents** : cartes carrées, bords droits, image de couverture par article
+- **Événements à venir** : image en bords droits (`rounded-none`)
+- **Header slider** : ajouter sous-titre/citation pro alignée sous chaque slide (Hab 2:14 / Luc 1:78 / verset thématique)
 
-## Architecture des pages (routes TanStack)
+### 3. Navigation mobile
+- Menu hamburger → **Sheet latéral** (shadcn `Sheet`) glissant depuis la gauche, avec sous-menus accordéon
 
-| Route | Contenu |
-|---|---|
-| `/` | Splash + Header full-width avec mega menu, slider hero, pensée du jour, services (icônes rondes), bibliothèque carousel, articles récents, événements à venir, stats, newsletter pop-up |
-| `/blog` | Articles (auteur Pasteur ADAM, thèmes Armageddon/fin du monde) + sidebar widgets, lecteur d'article intégré |
-| `/enseignement` | Vidéos YouTube intégrées (8 liens fournis), like/partage/téléchargement, sidebar vidéos similaires |
-| `/podcast` | Messages MCSF + émissions radio, lecteur audio simple avec barre de progression, téléchargement |
-| `/bibliotheque` | 7 livres du Pasteur ADAM, lecture en ligne par chapitre, plans de lecture, sidebar |
-| `/bible` | Lecture par livre/chapitre, audio, favoris, plan de lecture |
-| `/forum` | Sujets + requêtes de prière avec bouton "Je prie" et compteur |
-| `/evenements` | Événements actuels/passés, VUPJ 2026 (MCSF Notse, Centre Rehoboth), inscription |
-| `/profil` | Compte utilisateur avec graphiques, notifications, confidentialité |
-| `/auth` | Inscription + connexion |
-| `/don` | Page de don |
+### 4. Blog
+- Ajouter `cover` (URL image) à chaque article dans `content.ts` (générer 4 images)
+- Cartes avec image en haut, bords carrés
+- Vue lecture : hero image + contenu long-form rédigé proprement (3–4 articles complets, ton pastoral)
 
-## Composants partagés
-- `SplashScreen` (logo + "Bienvenue", 3s)
-- `ModernHeader` sticky : logo MCSF + mega menu desktop, slide horizontal tablette, hamburger mobile, barre de recherche
-- `DesktopHeaderSlider` full-width (page d'accueil uniquement)
-- `BottomNavigation` mobile (4 onglets)
-- `Footer` complet (logo, coordonnées, liens, réseaux, derniers articles)
-- `NewsletterPopup`, `DailyThought`, `ShareButtons`, `EmbeddedVideoPlayer`, `AudioPlayer`, `BookReader`, `ArticleReader`
+### 5. Enseignement
+- Autoplay du premier YouTube à l'arrivée (paramètre `autoplay=1&mute=1`)
+- Bouton **Partager** (Web Share + copie lien + WhatsApp/Facebook)
+- Retirer le bouton « Voir sur YouTube »
 
-## Détails techniques
-- Stack actuel : TanStack Start + React 19 + Tailwind v4
-- Routing fichier-based dans `src/routes/`
-- Tokens design en `oklch` dans `src/styles.css`
-- Données (livres, vidéos, articles, podcasts, événements) en frontend statique pour cette V1
-- Auth, dons, forum interactif, profil sauvegardé → nécessitent **Lovable Cloud** (à activer plus tard si souhaité)
-- Logo MCSF à générer (le projet original utilisait une image uploadée à laquelle je n'ai pas accès)
+### 6. Podcast
+- Lecteur audio complet : play/pause, **seek bar interactive**, temps écoulé/total, volume
+- Bouton **Télécharger** affiché en premier (avant écoute)
+- Un seul lecteur global, contrôle par épisode
 
-## Phases de livraison
+### 7. Bibliothèque (page)
+- Grille carrée alignée (`grid` + `aspect-square`, bords droits, espacement uniforme)
+- Couverture image par livre
+- Modal de lecture amélioré : 
+  - Lecture chapitre par chapitre à son rythme (contenu pastoral générique court)
+  - **TTS (Web Speech API)** : bouton « Écouter » qui lit le chapitre à voix haute (play/pause/stop)
+  - Bouton **Télécharger PDF** (générer un PDF simple avec jsPDF)
+  - **Surlignage** : sélection de texte → bouton « Surligner » qui mémorise dans `localStorage`
 
-Étant donné l'ampleur (~25+ fichiers, 11 routes), je propose de livrer en **3 itérations** plutôt qu'un seul gros message :
+### 8. Bible
+- Survol/clic sur référence (ex. `Jean 3:16`) → **popover miniature** affichant le verset (Louis Segond, base statique des versets clés)
+- Surlignage des passages essentiels (sélection texte → couleur, persisté)
+- Conserver favoris existants
 
-1. **Phase 1 — Fondation + Accueil** : design system, header/footer/splash/bottom nav, page d'accueil complète avec tous ses blocs
-2. **Phase 2 — Modules contenu** : blog, enseignement (avec les 8 vidéos YouTube), podcast, bibliothèque (7 livres)
-3. **Phase 3 — Modules complémentaires** : bible, forum, événements, profil, auth, don, PWA
+### 9. Événements
+- Image carrée par événement (bord droit), alignement pro grille
+- Layout cohérent texte + métadonnées
 
-Pour les fonctionnalités nécessitant un backend (auth réelle, dons, forum partagé, sauvegarde profil), je proposerai d'activer Lovable Cloud à la phase 3.
+### 10. Forum (sujets/réponses + notifications + modération + « Je prie » par user)
+- Activer **Lovable Cloud** (Supabase) :
+  - Tables : `forum_topics`, `forum_replies`, `forum_prayers (user_id, topic_id unique)`, `notifications`
+  - RLS : auth requis pour création, lecture publique
+- UI : créer sujet, fil de réponses, toggle « Je prie » (1 par utilisateur), flag modération (signaler)
+- Cloche notifications dans header (count réponses non lues sur ses sujets)
+- Modération simple : auteur peut supprimer son post, admin peut masquer (role `admin` via `has_role`)
 
-## Limites connues
-- Logo officiel MCSF non disponible → je génère un logo proche (croix + flamme bleu/rouge), à remplacer par votre fichier officiel
-- Photos des personnes/événements générées (chrétiens habillés décemment, femmes voilées, conformes au brief)
-- Liens vidéos YouTube intégrés tels que fournis dans le brief original
+### 11. Recherche globale
+- Composant `GlobalSearch` (icône loupe dans header → Command palette shadcn `cmdk`)
+- Indexe : `ARTICLES`, `VIDEOS`, `BOOKS`, chapitres Bible (66 livres × titres)
+- Résultats groupés par catégorie, navigation directe
+
+### 12. Corrections runtime
+- Hydration mismatch dans `Footer` (espace blanc autour de `contact@mcsf.org`)
+
+### Détails techniques
+- **Cloud requis** uniquement pour Forum (sections 10). Reste = frontend.
+- **Images livres/articles** : `imagegen` (fast), aspect 1:1 pour livres, 16:9 pour articles/événements
+- **PDF** : `jspdf` (npm)
+- **TTS** : `window.speechSynthesis` natif, voix française
+- **Recherche** : fuzzy match simple sur titre/excerpt (pas de lib externe)
+- **Bords carrés** : `rounded-none` partout sur cartes ciblées (au lieu de `rounded-2xl`)
+
+### Livraison en 3 sous-phases
+- **3A** : Logo + accueil (bibliothèque/articles/événements carrés + header texts) + nav mobile sheet + fix hydration
+- **3B** : Blog (images+articles longs), Enseignement (autoplay/share), Podcast (lecteur complet), Bibliothèque (TTS+PDF+surlignage+images), Bible (popover versets+surlignage), Événements (images carrées), Recherche globale
+- **3C** : Activation Cloud + Forum complet (sujets, réponses, prière par user, notifications, modération)
