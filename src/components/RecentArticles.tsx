@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ARTICLES } from "@/lib/content";
+import { Calendar } from "lucide-react";
 
 export function RecentArticles() {
   return (
@@ -11,23 +12,29 @@ export function RecentArticles() {
         </div>
         <Link to="/blog" className="text-sm font-semibold text-primary hover:text-flame">Plus →</Link>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        {ARTICLES.slice(0, 3).map((a, idx) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {ARTICLES.slice(0, 3).map((a) => (
           <Link
             key={a.id}
             to="/blog"
-            className={`group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-soft ${idx === 0 ? "md:col-span-1 md:row-span-1" : ""}`}
+            className="group flex aspect-square flex-col overflow-hidden rounded-none border border-border bg-card transition hover:shadow-elegant"
           >
-            <div className="aspect-[16/10] bg-gradient-primary" />
+            <div className="relative h-1/2 w-full overflow-hidden bg-gradient-primary">
+              <div className="absolute inset-0 flex items-end p-4">
+                <span className="rounded-none bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground">
+                  {a.category}
+                </span>
+              </div>
+            </div>
             <div className="flex flex-1 flex-col p-4">
-              <span className="self-start rounded-full bg-flame/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-flame">
-                {a.category}
-              </span>
-              <h3 className="mt-2 font-display text-lg font-bold leading-snug text-foreground group-hover:text-primary">
+              <h3 className="font-display text-base font-bold leading-snug text-foreground group-hover:text-primary line-clamp-2">
                 {a.title}
               </h3>
-              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{a.excerpt}</p>
-              <div className="mt-3 text-xs text-muted-foreground">{a.author} · {new Date(a.date).toLocaleDateString("fr-FR")}</div>
+              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{a.excerpt}</p>
+              <div className="mt-auto flex items-center gap-1 pt-2 text-[11px] text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <span>{new Date(a.date).toLocaleDateString("fr-FR")}</span>
+              </div>
             </div>
           </Link>
         ))}

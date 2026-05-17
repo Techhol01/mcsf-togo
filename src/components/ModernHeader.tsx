@@ -1,19 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Search, X, ChevronDown } from "lucide-react";
+import { Menu, Search, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/mcsf-logo.png";
+import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export function ModernHeader() {
-  const [open, setOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState<string | null>(null);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10" />
+          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 object-contain" />
           <div className="leading-tight">
             <div className="font-display text-lg font-bold text-primary">MCSF</div>
             <div className="hidden text-[10px] uppercase tracking-wider text-muted-foreground sm:block">
@@ -22,7 +22,6 @@ export function ModernHeader() {
           </div>
         </Link>
 
-        {/* Desktop mega menu */}
         <nav className="hidden items-center gap-1 lg:flex">
           <Link
             to="/"
@@ -47,11 +46,7 @@ export function ModernHeader() {
                 <div className="absolute left-1/2 top-full w-72 -translate-x-1/2 pt-2">
                   <div className="rounded-xl border border-border bg-popover p-2 shadow-soft">
                     {group.items.map((it) => (
-                      <Link
-                        key={it.to}
-                        to={it.to}
-                        className="block rounded-lg p-3 hover:bg-accent"
-                      >
+                      <Link key={it.to} to={it.to} className="block rounded-lg p-3 hover:bg-accent">
                         <div className="text-sm font-semibold text-foreground">{it.label}</div>
                         <div className="text-xs text-muted-foreground">{it.desc}</div>
                       </Link>
@@ -63,7 +58,6 @@ export function ModernHeader() {
           ))}
         </nav>
 
-        {/* Search + CTA + mobile burger */}
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 md:flex">
             <Search className="h-4 w-4 text-muted-foreground" />
@@ -79,13 +73,58 @@ export function ModernHeader() {
           >
             Faire un don
           </Link>
-          <button
-            className="inline-flex items-center justify-center rounded-md p-2 hover:bg-accent lg:hidden"
-            aria-label="Menu"
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+
+          {/* Mobile sidebar */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <button
+                className="inline-flex items-center justify-center rounded-md p-2 hover:bg-accent lg:hidden"
+                aria-label="Menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 p-0">
+              <SheetHeader className="border-b border-border p-4">
+                <SheetTitle className="flex items-center gap-2">
+                  <img src={logo} alt="MCSF" className="h-8 w-8 object-contain" />
+                  <span className="font-display text-primary">MCSF</span>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-1 p-4">
+                <div className="mb-2 flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-2">
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <input type="search" placeholder="Rechercher..." className="flex-1 bg-transparent text-sm outline-none" />
+                </div>
+                <SheetClose asChild>
+                  <Link to="/" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent">Accueil</Link>
+                </SheetClose>
+                <Accordion type="multiple" className="w-full">
+                  {MEGA_MENU.map((group) => (
+                    <AccordionItem key={group.label} value={group.label} className="border-none">
+                      <AccordionTrigger className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent hover:no-underline">
+                        {group.label}
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-1 pl-3">
+                        {group.items.map((it) => (
+                          <SheetClose asChild key={it.to}>
+                            <Link to={it.to} className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
+                              {it.label}
+                            </Link>
+                          </SheetClose>
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+                <SheetClose asChild>
+                  <Link to="/don" className="mt-3 rounded-full bg-gradient-flame px-4 py-2 text-center text-sm font-semibold text-flame-foreground">
+                    Faire un don
+                  </Link>
+                </SheetClose>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
@@ -105,41 +144,6 @@ export function ModernHeader() {
           ))}
         </div>
       </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <div className="border-t border-border bg-background lg:hidden">
-          <div className="container-page py-3">
-            <div className="mb-3 flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Rechercher..."
-                className="flex-1 bg-transparent text-sm outline-none"
-              />
-            </div>
-            <nav className="grid gap-1">
-              {NAV_ITEMS.map((it) => (
-                <Link
-                  key={it.to}
-                  to={it.to}
-                  onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
-                >
-                  {it.label}
-                </Link>
-              ))}
-              <Link
-                to="/don"
-                onClick={() => setOpen(false)}
-                className="mt-2 rounded-md bg-gradient-flame px-3 py-2 text-center text-sm font-semibold text-flame-foreground"
-              >
-                Faire un don
-              </Link>
-            </nav>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

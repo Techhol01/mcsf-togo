@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/mcsf-logo.png";
+import logo from "@/assets/mcsf-logo-official.png";
 
 export function SplashScreen() {
   const [visible, setVisible] = useState(true);

@@ -42,12 +42,18 @@ export function DesktopHeaderSlider() {
           <img src={s.img} alt="" className="h-full w-full object-cover" loading={idx === 0 ? "eager" : "lazy"} />
           <div className="absolute inset-0 bg-gradient-hero" />
           <div className="container-page relative flex h-full flex-col items-start justify-center text-primary-foreground">
-            <div className="max-w-2xl animate-slide-in">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-flame">{s.subtitle}</p>
-              <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">
+            <div className="max-w-3xl animate-slide-in">
+              <p className="mb-3 inline-block border-l-4 border-flame pl-3 text-xs font-bold uppercase tracking-[0.3em] text-flame">
+                {s.subtitle}
+              </p>
+              <h2 className="font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl">
                 {s.title}
               </h2>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <p className="mt-4 max-w-xl text-base font-medium text-primary-foreground/90 md:text-lg">
+                Mission Christ Sans Frontière — Pasteur ADAM Aboudaminou. Une œuvre consacrée à la prédication
+                de l'Évangile et à la révélation parfaite de Jésus-Christ.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   to={s.cta.to}
                   className="rounded-full bg-gradient-flame px-6 py-3 text-sm font-semibold shadow-flame transition hover:scale-[1.03]"
