@@ -19,12 +19,11 @@ export function RecentArticles() {
             to="/blog"
             className="group flex aspect-square flex-col overflow-hidden rounded-none border border-border bg-card transition hover:shadow-elegant"
           >
-            <div className="relative h-1/2 w-full overflow-hidden bg-gradient-primary">
-              <div className="absolute inset-0 flex items-end p-4">
-                <span className="rounded-none bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground">
-                  {a.category}
-                </span>
-              </div>
+            <div className="relative h-1/2 w-full overflow-hidden">
+              <img src={a.cover} alt={a.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+              <span className="absolute left-3 top-3 rounded-none bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground">
+                {a.category}
+              </span>
             </div>
             <div className="flex flex-1 flex-col p-4">
               <h3 className="font-display text-base font-bold leading-snug text-foreground group-hover:text-primary line-clamp-2">

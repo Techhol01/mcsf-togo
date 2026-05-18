@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { VIDEOS } from "@/lib/content";
-import { Play, Share2, ThumbsUp, Download } from "lucide-react";
+import { Play, Share2, ThumbsUp } from "lucide-react";
 
 export const Route = createFileRoute("/enseignement")({
   head: () => ({
@@ -42,7 +42,7 @@ function EnseignementPage() {
             <div className="aspect-video w-full bg-black">
               <iframe
                 key={active.id}
-                src={`https://www.youtube.com/embed/${active.id}`}
+                src={`https://www.youtube.com/embed/${active.id}?autoplay=1&mute=1&rel=0`}
                 title={active.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -56,12 +56,9 @@ function EnseignementPage() {
                 <button onClick={() => like(active.id)} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
                   <ThumbsUp className="h-4 w-4" /> J'aime {likes[active.id] ? `(${likes[active.id]})` : ""}
                 </button>
-                <button onClick={() => share(active.title)} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
+                <button onClick={() => share(active.title)} className="inline-flex items-center gap-2 rounded-full bg-flame px-4 py-2 text-sm font-medium text-flame-foreground hover:opacity-90">
                   <Share2 className="h-4 w-4" /> Partager
                 </button>
-                <a href={`https://www.youtube.com/watch?v=${active.id}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-flame px-4 py-2 text-sm font-medium text-flame-foreground hover:opacity-90">
-                  <Download className="h-4 w-4" /> Voir sur YouTube
-                </a>
               </div>
             </div>
           </div>

@@ -7,33 +7,39 @@ import hero3 from "@/assets/hero-3.jpg";
 const SLIDES = [
   {
     img: hero1,
-    title: "« La terre sera remplie de la connaissance de la gloire de l'Éternel »",
+    eyebrow: "Mission Christ Sans Frontière",
     subtitle: "Habakuk 2:14",
-    cta: { label: "Écouter", to: "/podcast" as const },
+    title: "« La terre sera remplie de la connaissance de la gloire de l'Éternel »",
+    body: "Une œuvre consacrée à la prédication de l'Évangile et à la révélation parfaite de Jésus-Christ.",
+    cta: { label: "Écouter le podcast", to: "/podcast" as const },
   },
   {
     img: hero2,
+    eyebrow: "Pasteur ADAM Aboudaminou",
+    subtitle: "Tite 2:11-13",
     title: "Marcher dans la pureté, briller pour Christ",
-    subtitle: "Une mission au cœur du Togo et au-delà des frontières",
+    body: "Une mission au cœur du Togo et au-delà des frontières — enseignements, prophéties et discipulat.",
     cta: { label: "Voir les enseignements", to: "/enseignement" as const },
   },
   {
     img: hero3,
-    title: "Soutenez l'œuvre du Royaume",
-    subtitle: "Votre don contribue à la propagation de l'Évangile",
-    cta: { label: "Donner", to: "/don" as const },
+    eyebrow: "Soutenir l'œuvre",
+    subtitle: "2 Corinthiens 9:7",
+    title: "Soutenez la propagation de l'Évangile",
+    body: "Votre don contribue à l'évangélisation, à la formation des disciples et au rayonnement de la mission.",
+    cta: { label: "Faire un don", to: "/don" as const },
   },
 ];
 
 export function DesktopHeaderSlider() {
   const [i, setI] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((v) => (v + 1) % SLIDES.length), 5500);
+    const t = setInterval(() => setI((v) => (v + 1) % SLIDES.length), 6000);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <section className="relative h-[420px] w-full overflow-hidden md:h-[520px]">
+    <section className="relative h-[460px] w-full overflow-hidden md:h-[560px]">
       {SLIDES.map((s, idx) => (
         <div
           key={idx}
@@ -43,15 +49,17 @@ export function DesktopHeaderSlider() {
           <div className="absolute inset-0 bg-gradient-hero" />
           <div className="container-page relative flex h-full flex-col items-start justify-center text-primary-foreground">
             <div className="max-w-3xl animate-slide-in">
-              <p className="mb-3 inline-block border-l-4 border-flame pl-3 text-xs font-bold uppercase tracking-[0.3em] text-flame">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.35em] text-flame">
+                {s.eyebrow}
+              </p>
+              <p className="mb-4 inline-block border-l-4 border-flame pl-3 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground/85">
                 {s.subtitle}
               </p>
               <h2 className="font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl">
                 {s.title}
               </h2>
               <p className="mt-4 max-w-xl text-base font-medium text-primary-foreground/90 md:text-lg">
-                Mission Christ Sans Frontière — Pasteur ADAM Aboudaminou. Une œuvre consacrée à la prédication
-                de l'Évangile et à la révélation parfaite de Jésus-Christ.
+                {s.body}
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link

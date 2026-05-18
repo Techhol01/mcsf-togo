@@ -1,13 +1,21 @@
 // Static content for MCSF — Pasteur ADAM Aboudaminou
+import bookCroix from "@/assets/book-croix.jpg";
+import bookMysteres from "@/assets/book-mysteres.jpg";
+import bookReconcilier from "@/assets/book-reconcilier.jpg";
+import articleArmageddon from "@/assets/article-armageddon.jpg";
+import articleRevelation from "@/assets/article-revelation.jpg";
+import articleEsperance from "@/assets/article-esperance.jpg";
+import eventVupj from "@/assets/event-vupj.jpg";
+import eventConference from "@/assets/event-conference.jpg";
 
 export const BOOKS = [
-  { id: "la-croix", title: "La Croix", author: "Pasteur ADAM Aboudaminou", chapters: 12 },
-  { id: "mysteres-de-la-croix", title: "Les Mystères de la Croix", author: "Pasteur ADAM Aboudaminou", chapters: 10 },
-  { id: "reconcilier-avec-dieu", title: "Soyez réconcilié avec Dieu", author: "Pasteur ADAM Aboudaminou", chapters: 8 },
-  { id: "reconcilier-simplifier", title: "Soyez réconcilié avec Dieu (version simplifiée)", author: "Pasteur ADAM Aboudaminou", chapters: 6 },
-  { id: "sela-hammachlehoth", title: "Sela Hammachlehoth", author: "Pasteur ADAM Aboudaminou", chapters: 9 },
-  { id: "musulman-disciple", title: "Comment faire d'un musulman un disciple de Jésus-Christ", author: "Pasteur ADAM Aboudaminou", chapters: 11 },
-  { id: "discoplat", title: "Le Discoplat", author: "Pasteur ADAM Aboudaminou", chapters: 7 },
+  { id: "la-croix", title: "La Croix", author: "Pasteur ADAM Aboudaminou", chapters: 12, cover: bookCroix },
+  { id: "mysteres-de-la-croix", title: "Les Mystères de la Croix", author: "Pasteur ADAM Aboudaminou", chapters: 10, cover: bookMysteres },
+  { id: "reconcilier-avec-dieu", title: "Soyez réconcilié avec Dieu", author: "Pasteur ADAM Aboudaminou", chapters: 8, cover: bookReconcilier },
+  { id: "reconcilier-simplifier", title: "Soyez réconcilié avec Dieu (version simplifiée)", author: "Pasteur ADAM Aboudaminou", chapters: 6, cover: bookReconcilier },
+  { id: "sela-hammachlehoth", title: "Sela Hammachlehoth", author: "Pasteur ADAM Aboudaminou", chapters: 9, cover: bookMysteres },
+  { id: "musulman-disciple", title: "Comment faire d'un musulman un disciple de Jésus-Christ", author: "Pasteur ADAM Aboudaminou", chapters: 11, cover: bookCroix },
+  { id: "discoplat", title: "Le Discoplat", author: "Pasteur ADAM Aboudaminou", chapters: 7, cover: bookReconcilier },
 ];
 
 export const VIDEOS = [
@@ -29,6 +37,7 @@ export const ARTICLES = [
     author: "Pasteur ADAM Aboudaminou",
     date: "2025-09-30",
     category: "Prophétie",
+    cover: articleArmageddon,
   },
   {
     id: "ils-crieront",
@@ -37,6 +46,7 @@ export const ARTICLES = [
     author: "Pasteur ADAM Aboudaminou",
     date: "2025-09-22",
     category: "Révélation",
+    cover: articleRevelation,
   },
   {
     id: "fin-du-monde",
@@ -45,6 +55,7 @@ export const ARTICLES = [
     author: "Pasteur ADAM Aboudaminou",
     date: "2025-09-10",
     category: "Eschatologie",
+    cover: articleEsperance,
   },
   {
     id: "preparer-coeur",
@@ -53,6 +64,7 @@ export const ARTICLES = [
     author: "Pasteur ADAM Aboudaminou",
     date: "2025-08-28",
     category: "Vie chrétienne",
+    cover: articleEsperance,
   },
 ];
 
@@ -71,6 +83,7 @@ export const EVENTS = [
     location: "MCSF Notse — Centre Rehoboth",
     status: "upcoming" as const,
     description: "Une conférence puissante pour la jeunesse chrétienne, avec enseignements, prière et communion fraternelle.",
+    cover: eventVupj,
   },
   {
     id: "conf-jeunesse",
@@ -79,6 +92,7 @@ export const EVENTS = [
     location: "MCSF Notse",
     status: "upcoming" as const,
     description: "Trois jours de réveil spirituel pour la nouvelle génération.",
+    cover: eventConference,
   },
   {
     id: "campagne-2025",
@@ -87,6 +101,7 @@ export const EVENTS = [
     location: "Lomé, Togo",
     status: "past" as const,
     description: "Campagne missionnaire avec plus de 500 décisions pour Christ.",
+    cover: eventConference,
   },
 ];
 
