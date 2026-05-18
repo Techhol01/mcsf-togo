@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Search, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 export function ModernHeader() {
   const [megaOpen, setMegaOpen] = useState<string | null>(null);
@@ -59,13 +60,8 @@ export function ModernHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 md:flex">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Rechercher..."
-              className="w-32 bg-transparent text-sm outline-none placeholder:text-muted-foreground lg:w-44"
-            />
+          <div className="hidden md:block">
+            <GlobalSearch />
           </div>
           <Link
             to="/don"
@@ -92,9 +88,8 @@ export function ModernHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 p-4">
-                <div className="mb-2 flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-2">
-                  <Search className="h-4 w-4 text-muted-foreground" />
-                  <input type="search" placeholder="Rechercher..." className="flex-1 bg-transparent text-sm outline-none" />
+                <div className="mb-2">
+                  <GlobalSearch trigger="input" />
                 </div>
                 <SheetClose asChild>
                   <Link to="/" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent">Accueil</Link>
