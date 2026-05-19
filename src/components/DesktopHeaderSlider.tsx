@@ -46,22 +46,22 @@ export function DesktopHeaderSlider() {
           className={`absolute inset-0 transition-opacity duration-1000 ${i === idx ? "opacity-100" : "opacity-0"}`}
         >
           <img src={s.img} alt="" className="h-full w-full object-cover" loading={idx === 0 ? "eager" : "lazy"} />
-          <div className="absolute inset-0 bg-gradient-hero" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />
           <div className="container-page relative flex h-full flex-col items-start justify-center text-primary-foreground">
-            <div className="max-w-3xl animate-slide-in">
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.35em] text-flame">
+            <div key={`${idx}-${i === idx}`} className="max-w-3xl">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.35em] text-flame drop-shadow">
                 {s.eyebrow}
               </p>
-              <p className="mb-4 inline-block border-l-4 border-flame pl-3 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground/85">
+              <p className="mb-4 inline-block border-l-4 border-flame bg-black/30 pl-3 pr-2 py-1 text-xs font-bold uppercase tracking-[0.3em] text-white">
                 {s.subtitle}
               </p>
-              <h2 className="font-display text-3xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl">
+              <h2 className="font-display text-2xl font-bold leading-tight tracking-tight drop-shadow-lg sm:text-3xl md:text-5xl lg:text-6xl">
                 {s.title}
               </h2>
-              <p className="mt-4 max-w-xl text-base font-medium text-primary-foreground/90 md:text-lg">
+              <p className="mt-4 max-w-xl text-sm font-medium text-white/95 drop-shadow md:text-lg">
                 {s.body}
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to={s.cta.to}
                   className="rounded-full bg-gradient-flame px-6 py-3 text-sm font-semibold shadow-flame transition hover:scale-[1.03]"
