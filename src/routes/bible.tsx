@@ -25,11 +25,25 @@ const BOOKS = [
   { id: "Revelation", name: "Apocalypse", chapters: 22 },
 ];
 
+type Verse = { n: number; text: string };
+const VERSES: Verse[] = [
+  { n: 1, text: "Il y avait parmi les pharisiens un homme, nommé Nicodème, un chef des Juifs." },
+  { n: 2, text: "Il vint, lui, auprès de Jésus, de nuit, et lui dit: Rabbi, nous savons que tu es un docteur venu de Dieu." },
+  { n: 3, text: "Jésus lui répondit: En vérité, en vérité, je te le dis, si un homme ne naît de nouveau, il ne peut voir le royaume de Dieu." },
+  { n: 16, text: "Car Dieu a tant aimé le monde qu'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu'il ait la vie éternelle." },
+];
+
 function BiblePage() {
   const [book, setBook] = useState(BOOKS[6]);
   const [chapter, setChapter] = useState(3);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [highlighted, setHighlighted] = useState<Set<number>>(new Set());
+  const [preview, setPreview] = useState<Verse | null>(null);
   const verseKey = `${book.name} ${chapter}`;
+
+  const toggleHighlight = (n: number) => {
+    setHighlighted((s) => { const x = new Set(s); x.has(n) ? x.delete(n) : x.add(n); return x; });
+  };
 
   return (
     <Layout>
@@ -90,11 +104,20 @@ function BiblePage() {
             </div>
           </div>
 
-          <div className="mt-5 space-y-3 text-foreground leading-relaxed">
-            <p><span className="mr-2 font-bold text-flame">1</span>Il y avait parmi les pharisiens un homme, nommé Nicodème, un chef des Juifs.</p>
-            <p><span className="mr-2 font-bold text-flame">2</span>Il vint, lui, auprès de Jésus, de nuit, et lui dit: Rabbi, nous savons que tu es un docteur venu de Dieu.</p>
-            <p><span className="mr-2 font-bold text-flame">3</span>Jésus lui répondit: En vérité, en vérité, je te le dis, si un homme ne naît de nouveau, il ne peut voir le royaume de Dieu.</p>
-            <p><span className="mr-2 font-bold text-flame">16</span>Car Dieu a tant aimé le monde qu'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu'il ait la vie éternelle.</p>
+          <p className="mt-4 text-xs text-muted-foreground">Astuce : cliquez sur un verset pour l'afficher en aperçu • double-cliquez pour le surligner.</p>
+          <div className="mt-3 space-y-3 leading-relaxed text-foreground">
+            {VERSES.map((v) => (
+              <p key={v.n}>
+                <button
+                  onClick={() => setPreview(v)}
+                  onDoubleClick={() => toggleHighlight(v.n)}
+                  className={`text-left transition ${highlighted.has(v.n) ? "bg-flame/25 px-1" : "hover:bg-accent/40"}`}
+                >
+                  <span className="mr-2 font-bold text-flame">{v.n}</span>
+                  {v.text}
+                </button>
+              </p>
+            ))}
             <p className="mt-4 text-sm italic text-muted-foreground">Le texte complet sera intégré via une API biblique. Les versets ci-dessus sont issus de la version Louis Segond (domaine public).</p>
           </div>
 
@@ -110,6 +133,26 @@ function BiblePage() {
           )}
         </div>
       </section>
+
+      {preview && (
+        <div className="fixed bottom-24 left-1/2 z-40 w-[92vw] max-w-md -translate-x-1/2 rounded-2xl border border-border bg-card p-4 shadow-elegant md:bottom-8">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-flame">{book.name} {chapter}:{preview.n}</p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground">{preview.text}</p>
+            </div>
+            <button onClick={() => setPreview(null)} className="rounded-full p-1 hover:bg-accent" aria-label="Fermer">
+              <span className="block h-4 w-4 text-center text-sm leading-4">×</span>
+            </button>
+          </div>
+          <div className="mt-3 flex justify-end gap-2">
+            <button onClick={() => toggleHighlight(preview.n)} className="rounded-full border border-border px-3 py-1 text-xs font-medium hover:bg-accent">
+              {highlighted.has(preview.n) ? "Retirer surlignage" : "Surligner"}
+            </button>
+            <button onClick={() => setPreview(null)} className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">Continuer</button>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
