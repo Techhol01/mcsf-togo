@@ -74,7 +74,7 @@ function EnseignementPage() {
             {VIDEOS.map((v) => (
               <button
                 key={v.id}
-                onClick={() => setActive(v)}
+                onClick={() => selectVideo(v)}
                 className={`group flex w-full items-center gap-3 rounded-xl border p-2 text-left transition hover:bg-accent ${active.id === v.id ? "border-primary bg-accent" : "border-border bg-card"}`}
               >
                 <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
