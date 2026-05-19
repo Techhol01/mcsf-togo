@@ -19,6 +19,10 @@ function EnseignementPage() {
   const [likes, setLikes] = useState<Record<string, number>>({});
 
   const like = (id: string) => setLikes((l) => ({ ...l, [id]: (l[id] ?? 0) + 1 }));
+  const selectVideo = (v: (typeof VIDEOS)[number]) => {
+    setActive(v);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const share = async (title: string) => {
     if (navigator.share) await navigator.share({ title, url: window.location.href }).catch(() => {});
     else navigator.clipboard?.writeText(window.location.href);
@@ -70,7 +74,7 @@ function EnseignementPage() {
             {VIDEOS.map((v) => (
               <button
                 key={v.id}
-                onClick={() => setActive(v)}
+                onClick={() => selectVideo(v)}
                 className={`group flex w-full items-center gap-3 rounded-xl border p-2 text-left transition hover:bg-accent ${active.id === v.id ? "border-primary bg-accent" : "border-border bg-card"}`}
               >
                 <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted">

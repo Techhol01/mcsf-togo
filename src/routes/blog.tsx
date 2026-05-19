@@ -28,7 +28,10 @@ function BlogPage() {
           <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
             <ArrowLeft className="h-4 w-4" /> Retour aux articles
           </button>
-          <span className="inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
+          <div className="overflow-hidden rounded-2xl">
+            <img src={active.cover} alt={active.title} className="aspect-[16/9] w-full object-cover" />
+          </div>
+          <span className="mt-6 inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
           <h1 className="mt-3 font-display text-3xl font-bold text-foreground md:text-4xl">{active.title}</h1>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1"><User className="h-4 w-4" /> {active.author}</span>
@@ -78,19 +81,24 @@ function BlogPage() {
           ))}
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {list.map((a) => (
-            <article key={a.id} className="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
-              <span className="inline-block w-fit rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{a.category}</span>
-              <h2 className="mt-3 font-display text-xl font-semibold text-foreground">{a.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{a.excerpt}</p>
-              <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><User className="h-3 w-3" /> {a.author}</span>
-                <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.date).toLocaleDateString("fr-FR")}</span>
+            <article key={a.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
+                <img src={a.cover} alt={a.title} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                <span className="absolute left-3 top-3 rounded-full bg-flame px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground shadow-flame">{a.category}</span>
               </div>
-              <button onClick={() => setActive(a)} className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
-                Lire l'article →
-              </button>
+              <div className="flex flex-1 flex-col p-5">
+                <h2 className="font-display text-lg font-bold text-foreground group-hover:text-primary line-clamp-2">{a.title}</h2>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{a.excerpt}</p>
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1"><User className="h-3 w-3" /> {a.author}</span>
+                  <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.date).toLocaleDateString("fr-FR")}</span>
+                </div>
+                <button onClick={() => setActive(a)} className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                  Lire l'article →
+                </button>
+              </div>
             </article>
           ))}
         </div>
