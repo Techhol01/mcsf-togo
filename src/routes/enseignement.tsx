@@ -19,6 +19,10 @@ function EnseignementPage() {
   const [likes, setLikes] = useState<Record<string, number>>({});
 
   const like = (id: string) => setLikes((l) => ({ ...l, [id]: (l[id] ?? 0) + 1 }));
+  const selectVideo = (v: (typeof VIDEOS)[number]) => {
+    setActive(v);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const share = async (title: string) => {
     if (navigator.share) await navigator.share({ title, url: window.location.href }).catch(() => {});
     else navigator.clipboard?.writeText(window.location.href);
