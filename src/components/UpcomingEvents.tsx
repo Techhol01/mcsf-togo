@@ -18,11 +18,11 @@ export function UpcomingEvents() {
           <Link
             key={e.id}
             to="/evenements"
-            className="group flex flex-col overflow-hidden rounded-none border border-border bg-card shadow-soft transition hover:shadow-elegant"
+            className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-elegant"
           >
             <div className="relative aspect-[16/9] w-full overflow-hidden">
-              <img src={e.cover} alt={e.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
-              <span className="absolute left-3 top-3 rounded-none bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground">
+              <img src={e.cover} alt={e.title} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <span className="absolute left-3 top-3 rounded-full bg-flame px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground shadow-flame">
                 À venir
               </span>
             </div>
