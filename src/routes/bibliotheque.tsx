@@ -106,8 +106,8 @@ function BibliothequePage() {
       </section>
 
       {openBook && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => { stopSpeak(); setOpenBook(null); }}>
-          <div className="relative flex max-h-[92vh] w-full max-w-4xl flex-col rounded-2xl bg-card shadow-elegant" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/80 md:items-center md:p-4" onClick={() => { stopSpeak(); setOpenBook(null); }}>
+          <div className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between gap-3 border-b border-border p-4">
               <div className="flex items-center gap-3">
                 <img src={openBook.cover} alt="" className="h-12 w-12 rounded object-cover" />

@@ -2,6 +2,7 @@ import { ModernHeader } from "./ModernHeader";
 import { Footer } from "./Footer";
 import { BottomNavigation } from "./BottomNavigation";
 import { SplashScreen } from "./SplashScreen";
+import { ChatBot } from "./ChatBot";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />
         <BottomNavigation />
+        <ChatBot />
       </div>
     </>
   );
