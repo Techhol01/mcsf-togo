@@ -1,7 +1,32 @@
+import { useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { BOOKS } from "@/lib/content";
 
 export function LibraryCarousel() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    let raf = 0;
+    const tick = () => {
+      if (!pausedRef.current && el) {
+        if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) {
+          el.scrollTo({ left: 0 });
+        } else {
+          el.scrollLeft += 0.7;
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const pause = () => { pausedRef.current = true; };
+  const resume = () => { pausedRef.current = false; };
+
   return (
     <section className="container-page py-8">
       <div className="mb-4 flex items-end justify-between">
@@ -13,9 +38,17 @@ export function LibraryCarousel() {
           Plus →
         </Link>
       </div>
-      <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
-        {BOOKS.map((b) => (
-          <Link key={b.id} to="/bibliotheque" className="group w-48 shrink-0 snap-start sm:w-56">
+      <div
+        ref={scrollerRef}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
+        onTouchStart={pause}
+        onTouchEnd={resume}
+        className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 no-scrollbar"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {[...BOOKS, ...BOOKS].map((b, i) => (
+          <Link key={`${b.id}-${i}`} to="/bibliotheque" className="group w-44 shrink-0 sm:w-56">
             <div className="relative aspect-square overflow-hidden rounded-none border border-border bg-muted shadow-soft transition group-hover:shadow-elegant">
               <img
                 src={b.cover}
