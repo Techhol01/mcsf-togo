@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
+import { PageBanner } from "@/components/PageBanner";
 import { Book, Heart, Search } from "lucide-react";
 
 export const Route = createFileRoute("/bible")({
@@ -47,15 +48,12 @@ function BiblePage() {
 
   return (
     <Layout>
-      <section className="bg-gradient-primary py-10 text-primary-foreground">
-        <div className="container-page flex items-center gap-3">
-          <Book className="h-7 w-7 text-flame" />
-          <div>
-            <h1 className="font-display text-3xl font-bold md:text-4xl">Bible — Louis Segond</h1>
-            <p className="mt-1 text-primary-foreground/85">Lire, méditer, marquer ses favoris.</p>
-          </div>
-        </div>
-      </section>
+      <PageBanner
+        title="Bible — Louis Segond"
+        subtitle="Lire, méditer, marquer ses favoris."
+        image="hero2"
+        icon={<Book className="h-7 w-7 text-flame" />}
+      />
 
       <section className="container-page grid gap-6 py-10 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-4">
