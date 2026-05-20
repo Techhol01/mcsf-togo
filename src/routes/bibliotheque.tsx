@@ -1,29 +1,60 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/Layout";
+import { PageBanner } from "@/components/PageBanner";
 import { BOOKS } from "@/lib/content";
-import { ChevronLeft, ChevronRight, X, Download, Play, Pause, Volume2, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library } from "lucide-react";
 
 export const Route = createFileRoute("/bibliotheque")({
   head: () => ({
     meta: [
       { title: "Bibliothèque — MCSF" },
-      { name: "description", content: "Les livres du Pasteur ADAM Aboudaminou à lire en ligne ou en PDF." },
+      { name: "description", content: "Les livres du Pasteur ADAM Aboudaminou à lire en ligne, écouter ou télécharger en PDF." },
     ],
   }),
   component: BibliothequePage,
 });
 
-const CHAPTER_TEXT = (book: string, chap: number) => `Chapitre ${chap} — ${book}.
+// Versets clés par livre, affichés dans le chapitre et cliquables
+const VERSES_BY_BOOK: Record<string, { ref: string; text: string }[]> = {
+  "la-croix": [
+    { ref: "Galates 6:14", text: "Pour ce qui me concerne, loin de moi la pensée de me glorifier d'autre chose que de la croix de notre Seigneur Jésus-Christ." },
+    { ref: "1 Corinthiens 1:18", text: "Car la prédication de la croix est une folie pour ceux qui périssent ; mais pour nous qui sommes sauvés, elle est une puissance de Dieu." },
+  ],
+  "mysteres-de-la-croix": [
+    { ref: "Colossiens 2:14-15", text: "Il a effacé l'acte dont les ordonnances nous condamnaient... triomphant des dominations et des autorités à la croix." },
+  ],
+  "reconcilier-avec-dieu": [
+    { ref: "2 Corinthiens 5:20", text: "Nous vous en supplions au nom de Christ : Soyez réconciliés avec Dieu !" },
+  ],
+  "reconcilier-simplifier": [
+    { ref: "Romains 5:10", text: "Si, lorsque nous étions ennemis, nous avons été réconciliés avec Dieu par la mort de son Fils..." },
+  ],
+  "sela-hammachlehoth": [
+    { ref: "Psaume 3:2", text: "Plusieurs disent à mon sujet : Plus de salut pour lui auprès de Dieu ! Pause (Sela)." },
+  ],
+  "musulman-disciple": [
+    { ref: "Matthieu 28:19", text: "Allez, faites de toutes les nations des disciples, les baptisant au nom du Père, du Fils et du Saint-Esprit." },
+  ],
+  "discoplat": [
+    { ref: "Jean 8:32", text: "Vous connaîtrez la vérité, et la vérité vous affranchira." },
+  ],
+};
+
+const chapterText = (book: string, chap: number) => `Chapitre ${chap} — ${book}.
 
 Ce chapitre invite le lecteur à méditer profondément la Parole de Dieu et à laisser l'Esprit Saint transformer son cœur. Le Pasteur ADAM Aboudaminou y développe avec rigueur les vérités bibliques essentielles pour la vie chrétienne authentique.
 
-Que la grâce du Seigneur Jésus-Christ vous accompagne tout au long de cette lecture, et que la révélation parfaite vous soit donnée. Amen.`;
+La révélation parfaite de Jésus-Christ y est exposée pas à pas, afin que chaque enfant de Dieu marche dans la pureté et la pleine connaissance de la gloire de l'Éternel.
+
+Que la grâce du Seigneur Jésus-Christ vous accompagne tout au long de cette lecture. Amen.`;
 
 function BibliothequePage() {
   const [openBook, setOpenBook] = useState<(typeof BOOKS)[number] | null>(null);
   const [chapter, setChapter] = useState(1);
   const [speaking, setSpeaking] = useState(false);
+  const [verse, setVerse] = useState<{ ref: string; text: string } | null>(null);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
     return () => { if (typeof window !== "undefined") window.speechSynthesis?.cancel(); };
@@ -32,12 +63,15 @@ function BibliothequePage() {
   const stopSpeak = () => { window.speechSynthesis?.cancel(); setSpeaking(false); };
 
   const speak = () => {
-    if (!openBook) return;
+    if (!openBook || typeof window === "undefined") return;
     window.speechSynthesis?.cancel();
-    const u = new SpeechSynthesisUtterance(CHAPTER_TEXT(openBook.title, chapter));
+    const text = chapterText(openBook.title, chapter);
+    const u = new SpeechSynthesisUtterance(text);
     u.lang = "fr-FR";
     u.rate = 0.95;
     u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    utterRef.current = u;
     window.speechSynthesis?.speak(u);
     setSpeaking(true);
   };
@@ -46,57 +80,55 @@ function BibliothequePage() {
     if (!openBook) return;
     const w = window.open("", "_blank");
     if (!w) return;
-    const content = BOOKS.find((b) => b.id === openBook.id);
-    if (!content) return;
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>${openBook.title}</title>
       <style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:0 24px;line-height:1.7;color:#222}
       h1{font-size:28px;margin-bottom:4px}h2{margin-top:32px;color:#444;border-bottom:1px solid #ddd;padding-bottom:6px}
       p{text-align:justify}</style></head><body>
       <h1>${openBook.title}</h1><p><em>${openBook.author}</em></p>
-      ${Array.from({ length: openBook.chapters }, (_, i) => `<h2>Chapitre ${i+1}</h2><p>${CHAPTER_TEXT(openBook.title, i+1).replace(/\n/g, "</p><p>")}</p>`).join("")}
+      ${Array.from({ length: openBook.chapters }, (_, i) => `<h2>Chapitre ${i+1}</h2><p>${chapterText(openBook.title, i+1).replace(/\n/g, "</p><p>")}</p>`).join("")}
       <script>window.onload=()=>window.print()</script>
       </body></html>`;
     w.document.write(html);
     w.document.close();
   };
 
+  const verses = openBook ? (VERSES_BY_BOOK[openBook.id] ?? []) : [];
+
   return (
     <Layout>
-      <section className="bg-gradient-primary py-10 text-primary-foreground">
-        <div className="container-page">
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Bibliothèque MCSF</h1>
-          <p className="mt-2 max-w-2xl text-primary-foreground/85">
-            Les œuvres du Pasteur ADAM Aboudaminou — à lire à votre rythme, écouter en audio ou télécharger en PDF.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        title="Bibliothèque MCSF"
+        subtitle="Les œuvres du Pasteur ADAM Aboudaminou — à lire à votre rythme, écouter en audio ou télécharger en PDF."
+        image="hero2"
+        icon={<Library className="h-7 w-7 text-flame" />}
+      />
 
       <section className="container-page py-10">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
           {BOOKS.map((b) => (
             <article key={b.id} className="group flex flex-col overflow-hidden rounded-none border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
               <div className="relative aspect-square w-full overflow-hidden bg-muted">
                 <img src={b.cover} alt={b.title} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-white/90">{b.chapters} chapitres</span>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-2">
+                  <span className="text-[9px] font-semibold uppercase tracking-wider text-white/90">{b.chapters} chapitres</span>
                 </div>
               </div>
-              <div className="flex flex-1 flex-col p-4">
-                <h2 className="font-display text-base font-bold leading-tight text-foreground line-clamp-2">{b.title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">{b.author}</p>
-                <div className="mt-auto flex gap-2 pt-4">
+              <div className="flex flex-1 flex-col p-3">
+                <h2 className="font-display text-sm font-bold leading-tight text-foreground line-clamp-2">{b.title}</h2>
+                <p className="mt-1 text-[11px] text-muted-foreground line-clamp-1">{b.author}</p>
+                <div className="mt-auto flex gap-1 pt-3">
                   <button
                     onClick={() => { setOpenBook(b); setChapter(1); }}
-                    className="inline-flex flex-1 items-center justify-center gap-1 rounded-none bg-flame px-3 py-2 text-xs font-semibold text-flame-foreground hover:opacity-90"
+                    className="inline-flex flex-1 items-center justify-center gap-1 rounded-none bg-flame px-2 py-1.5 text-[11px] font-semibold text-flame-foreground hover:opacity-90"
                   >
-                    <BookOpen className="h-3.5 w-3.5" /> Lire
+                    <BookOpen className="h-3 w-3" /> Lire
                   </button>
                   <button
                     onClick={() => { setOpenBook(b); setTimeout(downloadPDF, 50); }}
-                    className="inline-flex items-center justify-center rounded-none border border-border bg-background px-3 py-2 text-xs font-semibold hover:bg-accent"
+                    className="inline-flex items-center justify-center rounded-none border border-border bg-background px-2 py-1.5 text-[11px] font-semibold hover:bg-accent"
                     title="Télécharger PDF"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    <Download className="h-3 w-3" />
                   </button>
                 </div>
               </div>
@@ -106,33 +138,60 @@ function BibliothequePage() {
       </section>
 
       {openBook && (
-        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/80 md:items-center md:p-4" onClick={() => { stopSpeak(); setOpenBook(null); }}>
-          <div className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between gap-3 border-b border-border p-4">
-              <div className="flex items-center gap-3">
+        <div
+          className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 md:items-center md:p-4"
+          onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }}
+        >
+          <div
+            className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-border p-3 md:p-4">
+              <div className="flex items-center gap-3 min-w-0">
                 <img src={openBook.cover} alt="" className="h-12 w-12 rounded object-cover" />
-                <div>
-                  <h3 className="font-display text-lg font-semibold text-foreground">{openBook.title}</h3>
+                <div className="min-w-0">
+                  <h3 className="truncate font-display text-base font-semibold text-foreground md:text-lg">{openBook.title}</h3>
                   <p className="text-xs text-muted-foreground">Chapitre {chapter} / {openBook.chapters}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button onClick={speaking ? stopSpeak : speak} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90">
                   {speaking ? <Pause className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-                  {speaking ? "Pause" : "Écouter"}
+                  <span className="hidden sm:inline">{speaking ? "Pause" : "Écouter"}</span>
                 </button>
                 <button onClick={downloadPDF} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold hover:bg-accent">
-                  <Download className="h-3.5 w-3.5" /> PDF
+                  <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">PDF</span>
                 </button>
-                <button onClick={() => { stopSpeak(); setOpenBook(null); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
+                <button onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 leading-relaxed text-foreground">
-              <h4 className="mb-4 font-display text-2xl font-semibold">Chapitre {chapter}</h4>
-              <div className="whitespace-pre-line text-foreground/90">
-                {CHAPTER_TEXT(openBook.title, chapter)}
+
+            <div className="flex-1 overflow-y-auto p-5 md:p-7">
+              <h4 className="mb-4 font-display text-2xl font-semibold text-foreground">Chapitre {chapter}</h4>
+              <div className="whitespace-pre-line leading-relaxed text-foreground/90">
+                {chapterText(openBook.title, chapter)}
               </div>
+
+              {verses.length > 0 && (
+                <div className="mt-6 border-l-4 border-flame bg-accent/40 p-4">
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-flame">Versets clés</p>
+                  <ul className="space-y-2">
+                    {verses.map((v) => (
+                      <li key={v.ref}>
+                        <button
+                          onClick={() => setVerse(v)}
+                          className="group inline-flex items-start gap-2 text-left text-sm hover:text-primary"
+                        >
+                          <Quote className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
+                          <span><span className="font-bold text-flame">{v.ref}</span> — <span className="underline-offset-2 group-hover:underline">{v.text.slice(0, 80)}…</span></span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
+
             <div className="flex items-center justify-between border-t border-border p-3">
               <button
                 disabled={chapter === 1}
@@ -141,7 +200,7 @@ function BibliothequePage() {
               >
                 <ChevronLeft className="h-4 w-4" /> Précédent
               </button>
-              <span className="text-xs text-muted-foreground">Lecture à votre rythme</span>
+              <span className="hidden text-xs text-muted-foreground sm:block">Lecture à votre rythme</span>
               <button
                 disabled={chapter === openBook.chapters}
                 onClick={() => { stopSpeak(); setChapter((c) => Math.min(openBook.chapters, c + 1)); }}
@@ -151,6 +210,27 @@ function BibliothequePage() {
               </button>
             </div>
           </div>
+
+          {/* Verse miniature — overlay sur la lecture */}
+          {verse && (
+            <div
+              className="fixed bottom-4 left-1/2 z-[60] w-[92vw] max-w-md -translate-x-1/2 rounded-none border-l-4 border-flame bg-card p-4 shadow-elegant md:bottom-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-flame">{verse.ref}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground">{verse.text}</p>
+                </div>
+                <button onClick={() => setVerse(null)} className="rounded-full p-1 hover:bg-accent" aria-label="Fermer">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="mt-3 flex justify-end">
+                <button onClick={() => setVerse(null)} className="rounded-none bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">Continuer la lecture</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Layout>

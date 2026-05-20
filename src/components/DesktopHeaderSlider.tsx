@@ -39,38 +39,38 @@ export function DesktopHeaderSlider() {
   }, []);
 
   return (
-    <section className="relative h-[460px] w-full overflow-hidden md:h-[560px]">
+    <section className="relative h-[520px] w-full overflow-hidden md:h-[560px]">
       {SLIDES.map((s, idx) => (
         <div
           key={idx}
           className={`absolute inset-0 transition-opacity duration-1000 ${i === idx ? "opacity-100" : "opacity-0"}`}
         >
           <img src={s.img} alt="" className="h-full w-full object-cover" loading={idx === 0 ? "eager" : "lazy"} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
           <div className="container-page relative flex h-full flex-col items-start justify-center text-primary-foreground">
             <div key={`${idx}-${i === idx}`} className="max-w-3xl">
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.35em] text-flame drop-shadow">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-flame drop-shadow sm:text-[11px] sm:tracking-[0.35em]">
                 {s.eyebrow}
               </p>
-              <p className="mb-4 inline-block border-l-4 border-flame bg-black/30 pl-3 pr-2 py-1 text-xs font-bold uppercase tracking-[0.3em] text-white">
+              <p className="mb-3 inline-block border-l-4 border-flame bg-black/40 pl-2 pr-2 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-white sm:mb-4 sm:pl-3 sm:text-xs sm:tracking-[0.3em]">
                 {s.subtitle}
               </p>
-              <h2 className="font-display text-2xl font-bold leading-tight tracking-tight drop-shadow-lg sm:text-3xl md:text-5xl lg:text-6xl">
+              <h2 className="font-display text-xl font-bold leading-tight tracking-tight drop-shadow-lg sm:text-3xl md:text-5xl lg:text-6xl">
                 {s.title}
               </h2>
-              <p className="mt-4 max-w-xl text-sm font-medium text-white/95 drop-shadow md:text-lg">
+              <p className="mt-3 max-w-xl text-xs font-medium text-white/95 drop-shadow sm:mt-4 sm:text-sm md:text-lg">
                 {s.body}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
                 <Link
                   to={s.cta.to}
-                  className="rounded-full bg-gradient-flame px-6 py-3 text-sm font-semibold shadow-flame transition hover:scale-[1.03]"
+                  className="rounded-full bg-gradient-flame px-4 py-2 text-xs font-semibold shadow-flame transition hover:scale-[1.03] sm:px-6 sm:py-3 sm:text-sm"
                 >
                   {s.cta.label}
                 </Link>
                 <Link
                   to="/blog"
-                  className="rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold backdrop-blur transition hover:bg-white/20"
+                  className="rounded-full border border-white/40 bg-white/10 px-4 py-2 text-xs font-semibold backdrop-blur transition hover:bg-white/20 sm:px-6 sm:py-3 sm:text-sm"
                 >
                   Lire le blog
                 </Link>

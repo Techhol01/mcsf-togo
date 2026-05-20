@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Layout } from "@/components/Layout";
+import { PageBanner } from "@/components/PageBanner";
 import { PODCASTS } from "@/lib/content";
 import { Play, Pause, Download, Radio, Volume2, VolumeX } from "lucide-react";
 
@@ -65,15 +66,12 @@ function PodcastPage() {
 
   return (
     <Layout>
-      <section className="bg-gradient-primary py-10 text-primary-foreground">
-        <div className="container-page flex items-center gap-3">
-          <Radio className="h-7 w-7 text-flame" />
-          <div>
-            <h1 className="font-display text-3xl font-bold md:text-4xl">Podcast & Radio MCSF</h1>
-            <p className="mt-1 text-primary-foreground/85">Messages audio à télécharger ou écouter en ligne.</p>
-          </div>
-        </div>
-      </section>
+      <PageBanner
+        title="Podcast & Radio MCSF"
+        subtitle="Messages audio à télécharger ou écouter en ligne."
+        image="hero3"
+        icon={<Radio className="h-7 w-7 text-flame" />}
+      />
 
       <section className="container-page py-10">
         <div className="grid gap-4 md:grid-cols-2">
