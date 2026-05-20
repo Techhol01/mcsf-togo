@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
+import { PageBanner } from "@/components/PageBanner";
 import { ARTICLES } from "@/lib/content";
-import { Calendar, User, Tag, ArrowLeft, Share2 } from "lucide-react";
+import { Calendar, User, Tag, ArrowLeft, Share2, Newspaper } from "lucide-react";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -61,12 +62,12 @@ function BlogPage() {
 
   return (
     <Layout>
-      <section className="bg-gradient-primary py-10 text-primary-foreground">
-        <div className="container-page">
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Blog MCSF</h1>
-          <p className="mt-2 max-w-2xl text-primary-foreground/85">Articles d'enseignement et de prophétie biblique.</p>
-        </div>
-      </section>
+      <PageBanner
+        title="Blog MCSF"
+        subtitle="Articles d'enseignement et de prophétie biblique."
+        image="hero1"
+        icon={<Newspaper className="h-7 w-7 text-flame" />}
+      />
 
       <section className="container-page py-10">
         <div className="mb-6 flex flex-wrap gap-2">
