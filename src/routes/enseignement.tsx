@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
+import { PageBanner } from "@/components/PageBanner";
 import { VIDEOS } from "@/lib/content";
-import { Play, Share2, ThumbsUp } from "lucide-react";
+import { Play, Share2, ThumbsUp, Video as VideoIcon } from "lucide-react";
 
 export const Route = createFileRoute("/enseignement")({
   head: () => ({
@@ -30,15 +31,12 @@ function EnseignementPage() {
 
   return (
     <Layout>
-      <section className="bg-gradient-primary py-10 text-primary-foreground">
-        <div className="container-page">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-flame">Enseignements</p>
-          <h1 className="mt-2 font-display text-3xl font-bold md:text-4xl">Vidéos & prédications</h1>
-          <p className="mt-2 max-w-2xl text-primary-foreground/85">
-            Plongez dans la Parole avec les enseignements du Pasteur ADAM Aboudaminou.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        title="Vidéos & prédications"
+        subtitle="Plongez dans la Parole avec les enseignements du Pasteur ADAM Aboudaminou."
+        image="hero1"
+        icon={<VideoIcon className="h-7 w-7 text-flame" />}
+      />
 
       <section className="container-page grid gap-8 py-10 lg:grid-cols-[1fr_360px]">
         <div>
