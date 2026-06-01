@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { VIDEOS } from "@/lib/content";
-import { Play, Share2, ThumbsUp, Video as VideoIcon } from "lucide-react";
+import { Play, Share2, ThumbsUp, Video as VideoIcon, Check } from "lucide-react";
 
 export const Route = createFileRoute("/enseignement")({
   head: () => ({
@@ -15,18 +15,47 @@ export const Route = createFileRoute("/enseignement")({
   component: EnseignementPage,
 });
 
+const LIKE_BASE = 2000;
+const LS_KEY = "mcsf_video_likes_v1";
+
 function EnseignementPage() {
   const [active, setActive] = useState(VIDEOS[0]);
-  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [liked, setLiked] = useState<Record<string, boolean>>({});
+  const [shared, setShared] = useState(false);
 
-  const like = (id: string) => setLikes((l) => ({ ...l, [id]: (l[id] ?? 0) + 1 }));
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try { setLiked(JSON.parse(localStorage.getItem(LS_KEY) ?? "{}")); } catch {}
+  }, []);
+
+  const toggleLike = (id: string) => {
+    setLiked((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const count = (id: string) => LIKE_BASE + (liked[id] ? 1 : 0);
+
   const selectVideo = (v: (typeof VIDEOS)[number]) => {
     setActive(v);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
   const share = async (title: string) => {
-    if (navigator.share) await navigator.share({ title, url: window.location.href }).catch(() => {});
-    else navigator.clipboard?.writeText(window.location.href);
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
+        await (navigator as Navigator).share({ title, text: title, url });
+      } else if (navigator?.clipboard) {
+        await navigator.clipboard.writeText(`${title} — ${url}`);
+      }
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    } catch {
+      /* user cancelled */
+    }
   };
 
   return (
@@ -40,7 +69,7 @@ function EnseignementPage() {
 
       <section className="container-page grid gap-8 py-10 lg:grid-cols-[1fr_360px]">
         <div>
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
+          <div className="overflow-hidden rounded-none border border-border bg-card shadow-soft">
             <div className="aspect-video w-full bg-black">
               <iframe
                 key={active.id}
@@ -55,11 +84,16 @@ function EnseignementPage() {
               <h2 className="font-display text-xl font-semibold text-foreground">{active.title}</h2>
               <p className="mt-1 text-sm text-muted-foreground">Pasteur ADAM Aboudaminou</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <button onClick={() => like(active.id)} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
-                  <ThumbsUp className="h-4 w-4" /> J'aime {likes[active.id] ? `(${likes[active.id]})` : ""}
+                <button
+                  onClick={() => toggleLike(active.id)}
+                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${liked[active.id] ? "border-flame bg-flame/10 text-flame" : "border-border bg-background hover:bg-accent"}`}
+                >
+                  <ThumbsUp className={`h-4 w-4 ${liked[active.id] ? "fill-flame" : ""}`} />
+                  J'aime · {count(active.id).toLocaleString("fr-FR")}
                 </button>
                 <button onClick={() => share(active.title)} className="inline-flex items-center gap-2 rounded-full bg-flame px-4 py-2 text-sm font-medium text-flame-foreground hover:opacity-90">
-                  <Share2 className="h-4 w-4" /> Partager
+                  {shared ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+                  {shared ? "Lien copié" : "Partager"}
                 </button>
               </div>
             </div>
@@ -68,20 +102,25 @@ function EnseignementPage() {
 
         <aside>
           <h3 className="mb-3 font-display text-lg font-semibold text-foreground">Vidéos similaires</h3>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
             {VIDEOS.map((v) => (
               <button
                 key={v.id}
                 onClick={() => selectVideo(v)}
-                className={`group flex w-full items-center gap-3 rounded-xl border p-2 text-left transition hover:bg-accent ${active.id === v.id ? "border-primary bg-accent" : "border-border bg-card"}`}
+                className={`group flex w-full flex-col gap-2 overflow-hidden rounded-none border p-0 text-left transition hover:shadow-elegant lg:flex-row lg:items-center lg:p-2 ${active.id === v.id ? "border-primary bg-accent" : "border-border bg-card"}`}
               >
-                <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
+                <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-muted lg:h-16 lg:w-28">
                   <img src={`https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`} alt={v.title} className="h-full w-full object-cover" loading="lazy" />
                   <span className="absolute inset-0 flex items-center justify-center bg-black/30 text-primary-foreground opacity-0 transition group-hover:opacity-100">
                     <Play className="h-6 w-6" />
                   </span>
                 </div>
-                <span className="line-clamp-2 text-sm font-medium text-foreground">{v.title}</span>
+                <div className="px-2 pb-2 lg:p-0">
+                  <span className="line-clamp-2 text-sm font-medium text-foreground">{v.title}</span>
+                  <span className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <ThumbsUp className="h-3 w-3" /> {count(v.id).toLocaleString("fr-FR")}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
