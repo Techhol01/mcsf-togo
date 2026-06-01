@@ -84,34 +84,28 @@ export function ModernHeader() {
               <SheetHeader className="border-b border-border p-4">
                 <SheetTitle className="flex items-center gap-2">
                   <img src={logo} alt="MCSF" className="h-8 w-8 object-contain" />
-                  <span className="font-display text-primary">MCSF</span>
+                  <div className="leading-tight text-left">
+                    <div className="font-display text-primary">MCSF</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Mission Christ Sans Frontière</div>
+                  </div>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 p-4">
                 <div className="mb-2">
                   <GlobalSearch trigger="input" />
                 </div>
-                <SheetClose asChild>
-                  <Link to="/" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent">Accueil</Link>
-                </SheetClose>
-                <Accordion type="multiple" className="w-full">
-                  {MEGA_MENU.map((group) => (
-                    <AccordionItem key={group.label} value={group.label} className="border-none">
-                      <AccordionTrigger className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent hover:no-underline">
-                        {group.label}
-                      </AccordionTrigger>
-                      <AccordionContent className="pb-1 pl-3">
-                        {group.items.map((it) => (
-                          <SheetClose asChild key={it.to}>
-                            <Link to={it.to} className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
-                              {it.label}
-                            </Link>
-                          </SheetClose>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                {NAV_ITEMS.map((it) => (
+                  <SheetClose asChild key={it.to}>
+                    <Link
+                      to={it.to}
+                      className="rounded-md px-3 py-3 text-base font-semibold hover:bg-accent"
+                      activeProps={{ className: "rounded-md px-3 py-3 text-base font-bold text-primary bg-accent" }}
+                      activeOptions={{ exact: it.to === "/" }}
+                    >
+                      {it.label}
+                    </Link>
+                  </SheetClose>
+                ))}
                 <SheetClose asChild>
                   <Link to="/don" className="mt-3 rounded-full bg-gradient-flame px-4 py-2 text-center text-sm font-semibold text-flame-foreground">
                     Faire un don
