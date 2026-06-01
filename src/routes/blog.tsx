@@ -29,7 +29,7 @@ function BlogPage() {
           <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
             <ArrowLeft className="h-4 w-4" /> Retour aux articles
           </button>
-          <div className="overflow-hidden rounded-2xl">
+          <div className="overflow-hidden rounded-none">
             <img src={active.cover} alt={active.title} className="aspect-[16/9] w-full object-cover" />
           </div>
           <span className="mt-6 inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
