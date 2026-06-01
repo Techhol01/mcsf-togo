@@ -13,11 +13,11 @@ export function ModernHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 object-contain" />
-          <div className="leading-tight">
+        <Link to="/" className="flex items-center gap-2 min-w-0">
+          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
+          <div className="leading-tight min-w-0">
             <div className="font-display text-lg font-bold text-primary">MCSF</div>
-            <div className="hidden text-[10px] uppercase tracking-wider text-muted-foreground sm:block">
+            <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
               Mission Christ Sans Frontière
             </div>
           </div>
