@@ -84,7 +84,7 @@ function BlogPage() {
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {list.map((a) => (
-            <article key={a.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
+            <article key={a.id} className="group flex flex-col overflow-hidden rounded-none border border-border bg-card shadow-soft transition hover:-translate-y-1 hover:shadow-elegant">
               <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <img src={a.cover} alt={a.title} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                 <span className="absolute left-3 top-3 rounded-full bg-flame px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-flame-foreground shadow-flame">{a.category}</span>
