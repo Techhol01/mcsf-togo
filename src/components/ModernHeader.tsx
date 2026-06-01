@@ -4,7 +4,7 @@ import { useState } from "react";
 import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import { GlobalSearch } from "@/components/GlobalSearch";
 
 export function ModernHeader() {
