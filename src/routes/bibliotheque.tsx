@@ -43,11 +43,62 @@ const VERSES_BY_BOOK: Record<string, { ref: string; text: string }[]> = {
 
 const chapterText = (book: string, chap: number) => `Chapitre ${chap} — ${book}.
 
-Ce chapitre invite le lecteur à méditer profondément la Parole de Dieu et à laisser l'Esprit Saint transformer son cœur. Le Pasteur ADAM Aboudaminou y développe avec rigueur les vérités bibliques essentielles pour la vie chrétienne authentique.
+Ce chapitre invite le lecteur à méditer profondément la Parole de Dieu et à laisser l'Esprit Saint transformer son cœur. Comme l'enseigne {{verse:0}}, le Pasteur ADAM Aboudaminou y développe avec rigueur les vérités bibliques essentielles pour la vie chrétienne authentique.
 
-La révélation parfaite de Jésus-Christ y est exposée pas à pas, afin que chaque enfant de Dieu marche dans la pureté et la pleine connaissance de la gloire de l'Éternel.
+La révélation parfaite de Jésus-Christ y est exposée pas à pas — voir notamment {{verse:1}} — afin que chaque enfant de Dieu marche dans la pureté et la pleine connaissance de la gloire de l'Éternel.
 
 Que la grâce du Seigneur Jésus-Christ vous accompagne tout au long de cette lecture. Amen.`;
+
+// Résumé bref + mots clés expliqués (dictionnaire biblique simplifié)
+const SUMMARY_BY_BOOK: Record<string, { summary: string; keywords: { word: string; def: string }[] }> = {
+  "la-croix": {
+    summary: "La Croix est le centre du plan rédempteur : par elle, Christ a porté nos péchés et réconcilié l'homme avec Dieu.",
+    keywords: [
+      { word: "Croix", def: "Instrument du supplice romain devenu, en Christ, le lieu du salut et de la victoire sur le péché." },
+      { word: "Rédemption", def: "Rachat de l'homme par le sang de Jésus-Christ (Éphésiens 1:7)." },
+      { word: "Grâce", def: "Faveur imméritée de Dieu accordée au pécheur repentant." },
+    ],
+  },
+  "mysteres-de-la-croix": {
+    summary: "Au-delà du sacrifice visible, la Croix renferme des mystères : triomphe sur les puissances, abolition de la Loi de condamnation.",
+    keywords: [
+      { word: "Mystère", def: "Vérité spirituelle révélée par l'Esprit (1 Corinthiens 2:7)." },
+      { word: "Principautés", def: "Puissances spirituelles vaincues à la Croix (Colossiens 2:15)." },
+    ],
+  },
+  "reconcilier-avec-dieu": {
+    summary: "Appel pressant à se réconcilier avec Dieu par la foi en Jésus-Christ, seul Médiateur.",
+    keywords: [
+      { word: "Réconciliation", def: "Rétablissement de la communion entre Dieu et l'homme par Christ." },
+      { word: "Ambassadeur", def: "Représentant officiel — le croyant porte le message de la réconciliation." },
+    ],
+  },
+  "reconcilier-simplifier": {
+    summary: "Version accessible du message : Dieu vous aime, Christ est mort pour vous, revenez à Lui aujourd'hui.",
+    keywords: [
+      { word: "Repentance", def: "Changement de cœur et de direction, retour vers Dieu." },
+    ],
+  },
+  "sela-hammachlehoth": {
+    summary: "Méditation prophétique autour de la pause (Sela) : s'arrêter pour considérer l'œuvre de Dieu.",
+    keywords: [
+      { word: "Sela", def: "Pause musicale et méditative dans les Psaumes — invitation à réfléchir." },
+    ],
+  },
+  "musulman-disciple": {
+    summary: "Manuel pratique pour annoncer Christ aux musulmans avec amour, respect et fidélité à l'Écriture.",
+    keywords: [
+      { word: "Disciple", def: "Apprenant de Jésus qui suit son enseignement et l'obéit." },
+      { word: "Évangile", def: "Bonne nouvelle du salut en Jésus-Christ." },
+    ],
+  },
+  "discoplat": {
+    summary: "Approche du discipulat appliquée à la vie quotidienne du croyant.",
+    keywords: [
+      { word: "Discipulat", def: "Processus de formation spirituelle pour devenir semblable à Christ." },
+    ],
+  },
+};
 
 function BibliothequePage() {
   const [openBook, setOpenBook] = useState<(typeof BOOKS)[number] | null>(null);
@@ -169,12 +220,28 @@ function BibliothequePage() {
             <div className="flex-1 overflow-y-auto p-5 md:p-7">
               <h4 className="mb-4 font-display text-2xl font-semibold text-foreground">Chapitre {chapter}</h4>
               <div className="whitespace-pre-line leading-relaxed text-foreground/90">
-                {chapterText(openBook.title, chapter)}
+                {chapterText(openBook.title, chapter).split(/(\{\{verse:\d+\}\})/g).map((part, idx) => {
+                  const m = part.match(/\{\{verse:(\d+)\}\}/);
+                  if (m) {
+                    const v = verses[Number(m[1])];
+                    if (!v) return null;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setVerse(v)}
+                        className="mx-0.5 inline-flex items-center gap-1 rounded-sm bg-flame/10 px-1.5 py-0.5 align-baseline text-sm font-bold text-flame underline decoration-dotted underline-offset-2 hover:bg-flame/20"
+                      >
+                        <Quote className="h-3 w-3" />{v.ref}
+                      </button>
+                    );
+                  }
+                  return <span key={idx}>{part}</span>;
+                })}
               </div>
 
               {verses.length > 0 && (
                 <div className="mt-6 border-l-4 border-flame bg-accent/40 p-4">
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-flame">Versets clés</p>
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-flame">Versets clés — cliquez pour lire en aperçu</p>
                   <ul className="space-y-2">
                     {verses.map((v) => (
                       <li key={v.ref}>
@@ -190,7 +257,28 @@ function BibliothequePage() {
                   </ul>
                 </div>
               )}
+
+              {SUMMARY_BY_BOOK[openBook.id] && (
+                <div className="mt-8 space-y-5 border-t border-border pt-6">
+                  <div>
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-primary">Résumé du chapitre</p>
+                    <p className="text-sm leading-relaxed text-foreground/90">{SUMMARY_BY_BOOK[openBook.id].summary}</p>
+                  </div>
+                  <div>
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-primary">Mots clés — dictionnaire biblique</p>
+                    <dl className="space-y-3">
+                      {SUMMARY_BY_BOOK[openBook.id].keywords.map((k) => (
+                        <div key={k.word} className="rounded-none border border-border bg-card p-3">
+                          <dt className="font-display text-sm font-bold text-flame">{k.word}</dt>
+                          <dd className="mt-1 text-sm text-foreground/80">{k.def}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                </div>
+              )}
             </div>
+
 
             <div className="flex items-center justify-between border-t border-border p-3">
               <button

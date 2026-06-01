@@ -4,7 +4,7 @@ import { useState } from "react";
 import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import { GlobalSearch } from "@/components/GlobalSearch";
 
 export function ModernHeader() {
@@ -13,11 +13,11 @@ export function ModernHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 object-contain" />
-          <div className="leading-tight">
+        <Link to="/" className="flex items-center gap-2 min-w-0">
+          <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
+          <div className="leading-tight min-w-0">
             <div className="font-display text-lg font-bold text-primary">MCSF</div>
-            <div className="hidden text-[10px] uppercase tracking-wider text-muted-foreground sm:block">
+            <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
               Mission Christ Sans Frontière
             </div>
           </div>
@@ -84,34 +84,28 @@ export function ModernHeader() {
               <SheetHeader className="border-b border-border p-4">
                 <SheetTitle className="flex items-center gap-2">
                   <img src={logo} alt="MCSF" className="h-8 w-8 object-contain" />
-                  <span className="font-display text-primary">MCSF</span>
+                  <div className="leading-tight text-left">
+                    <div className="font-display text-primary">MCSF</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Mission Christ Sans Frontière</div>
+                  </div>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 p-4">
                 <div className="mb-2">
                   <GlobalSearch trigger="input" />
                 </div>
-                <SheetClose asChild>
-                  <Link to="/" className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent">Accueil</Link>
-                </SheetClose>
-                <Accordion type="multiple" className="w-full">
-                  {MEGA_MENU.map((group) => (
-                    <AccordionItem key={group.label} value={group.label} className="border-none">
-                      <AccordionTrigger className="rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent hover:no-underline">
-                        {group.label}
-                      </AccordionTrigger>
-                      <AccordionContent className="pb-1 pl-3">
-                        {group.items.map((it) => (
-                          <SheetClose asChild key={it.to}>
-                            <Link to={it.to} className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
-                              {it.label}
-                            </Link>
-                          </SheetClose>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+                {NAV_ITEMS.map((it) => (
+                  <SheetClose asChild key={it.to}>
+                    <Link
+                      to={it.to}
+                      className="rounded-md px-3 py-3 text-base font-semibold hover:bg-accent"
+                      activeProps={{ className: "rounded-md px-3 py-3 text-base font-bold text-primary bg-accent" }}
+                      activeOptions={{ exact: it.to === "/" }}
+                    >
+                      {it.label}
+                    </Link>
+                  </SheetClose>
+                ))}
                 <SheetClose asChild>
                   <Link to="/don" className="mt-3 rounded-full bg-gradient-flame px-4 py-2 text-center text-sm font-semibold text-flame-foreground">
                     Faire un don
