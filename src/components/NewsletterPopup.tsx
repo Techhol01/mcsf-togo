@@ -10,7 +10,7 @@ export function NewsletterPopup() {
     const t = setTimeout(() => {
       setOpen(true);
       sessionStorage.setItem("mcsf-newsletter-shown", "1");
-    }, 6000);
+    }, 18000);
     return () => clearTimeout(t);
   }, []);
 
