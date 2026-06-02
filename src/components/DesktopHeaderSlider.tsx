@@ -48,18 +48,18 @@ export function DesktopHeaderSlider() {
           <img src={s.img} alt="" className="h-full w-full object-cover" loading={idx === 0 ? "eager" : "lazy"} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="container-page relative z-10 flex h-full flex-col items-start justify-center text-primary-foreground">
-            <div className="max-w-3xl">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-flame drop-shadow sm:text-[11px] sm:tracking-[0.35em]">
+          <div className="container-page relative z-20 flex h-full flex-col items-start justify-center text-primary-foreground">
+            <div className="max-w-3xl rounded-none border-l-4 border-flame bg-black/60 p-4 backdrop-blur-sm sm:p-6 md:bg-black/40">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.3em] text-flame drop-shadow sm:text-xs sm:tracking-[0.35em]">
                 {s.eyebrow}
               </p>
-              <p className="mb-3 inline-block border-l-4 border-flame bg-black/50 pl-2 pr-2 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-white sm:mb-4 sm:pl-3 sm:text-xs sm:tracking-[0.3em]">
+              <p className="mb-3 inline-block bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-flame-foreground sm:mb-4 sm:text-xs sm:tracking-[0.3em]">
                 {s.subtitle}
               </p>
-              <h2 className="font-display text-2xl font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] sm:text-3xl md:text-5xl lg:text-6xl">
+              <h2 className="font-display text-xl font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] sm:text-3xl md:text-5xl lg:text-6xl">
                 {s.title}
               </h2>
-              <p className="mt-3 max-w-xl text-sm font-medium text-white/95 drop-shadow sm:mt-4 sm:text-base md:text-lg">
+              <p className="mt-3 max-w-xl text-sm font-medium text-white drop-shadow sm:mt-4 sm:text-base md:text-lg">
                 {s.body}
               </p>
               <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
