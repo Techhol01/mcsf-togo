@@ -192,7 +192,7 @@ function BibliothequePage() {
       {openBook && (
         <div
           className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 md:items-center md:p-4"
-          onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }}
+          onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }}
         >
           <div
             className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl"
