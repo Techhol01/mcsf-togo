@@ -33,53 +33,56 @@ const SLIDES = [
 
 export function DesktopHeaderSlider() {
   const [i, setI] = useState(0);
+  const activeSlide = SLIDES[i];
+
   useEffect(() => {
     const t = setInterval(() => setI((v) => (v + 1) % SLIDES.length), 6000);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <section className="relative h-[480px] w-full overflow-hidden sm:h-[520px] md:h-[560px]">
+    <section className="relative h-[500px] w-full overflow-hidden bg-primary sm:h-[540px] md:h-[580px]">
       {SLIDES.map((s, idx) => (
         <div
           key={idx}
-          className={`absolute inset-0 transition-opacity duration-1000 ${i === idx ? "opacity-100 z-10" : "opacity-0 z-0"}`}
+          aria-hidden={i !== idx}
+          className={`absolute inset-0 transition-opacity duration-1000 ${i === idx ? "opacity-100" : "opacity-0"}`}
         >
           <img src={s.img} alt="" className="h-full w-full object-cover" loading={idx === 0 ? "eager" : "lazy"} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="container-page relative z-20 flex h-full flex-col items-start justify-center text-primary-foreground">
-            <div className="max-w-3xl rounded-none border-l-4 border-flame bg-black/60 p-4 backdrop-blur-sm sm:p-6 md:bg-black/40">
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.3em] text-flame drop-shadow sm:text-xs sm:tracking-[0.35em]">
-                {s.eyebrow}
-              </p>
-              <p className="mb-3 inline-block bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-flame-foreground sm:mb-4 sm:text-xs sm:tracking-[0.3em]">
-                {s.subtitle}
-              </p>
-              <h2 className="font-display text-xl font-bold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] sm:text-3xl md:text-5xl lg:text-6xl">
-                {s.title}
-              </h2>
-              <p className="mt-3 max-w-xl text-sm font-medium text-white drop-shadow sm:mt-4 sm:text-base md:text-lg">
-                {s.body}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
-                <Link
-                  to={s.cta.to}
-                  className="rounded-full bg-gradient-flame px-4 py-2 text-xs font-semibold shadow-flame transition hover:scale-[1.03] sm:px-6 sm:py-3 sm:text-sm"
-                >
-                  {s.cta.label}
-                </Link>
-                <Link
-                  to="/blog"
-                  className="rounded-full border border-white/40 bg-white/10 px-4 py-2 text-xs font-semibold backdrop-blur transition hover:bg-white/20 sm:px-6 sm:py-3 sm:text-sm"
-                >
-                  Lire le blog
-                </Link>
-              </div>
-            </div>
-          </div>
         </div>
       ))}
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-foreground/95 via-foreground/75 to-foreground/20" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-foreground/90 via-transparent to-foreground/30" />
+      <div className="container-page absolute inset-0 z-30 flex h-full flex-col items-start justify-center text-primary-foreground">
+        <div key={i} className="max-w-3xl rounded-none border-l-4 border-flame bg-foreground/70 p-4 shadow-flame backdrop-blur-sm animate-slide-in sm:p-6 md:bg-foreground/55">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-flame drop-shadow sm:tracking-[0.35em]">
+            {activeSlide.eyebrow}
+          </p>
+          <p className="mb-3 inline-block bg-flame px-2 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-flame-foreground sm:mb-4 sm:text-xs sm:tracking-[0.3em]">
+            {activeSlide.subtitle}
+          </p>
+          <h2 className="font-display text-2xl font-extrabold leading-tight text-primary-foreground drop-shadow sm:text-3xl md:text-5xl lg:text-6xl">
+            {activeSlide.title}
+          </h2>
+          <p className="mt-3 max-w-xl text-sm font-semibold text-primary-foreground drop-shadow sm:mt-4 sm:text-base md:text-lg">
+            {activeSlide.body}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2 sm:mt-6 sm:gap-3">
+            <Link
+              to={activeSlide.cta.to}
+              className="rounded-full bg-gradient-flame px-4 py-2 text-xs font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:px-6 sm:py-3 sm:text-sm"
+            >
+              {activeSlide.cta.label}
+            </Link>
+            <Link
+              to="/blog"
+              className="rounded-full border border-primary-foreground/50 bg-primary-foreground/15 px-4 py-2 text-xs font-semibold text-primary-foreground backdrop-blur transition hover:bg-primary-foreground/25 sm:px-6 sm:py-3 sm:text-sm"
+            >
+              Lire le blog
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
         {SLIDES.map((_, idx) => (
           <button
