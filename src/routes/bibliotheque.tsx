@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { BOOKS } from "@/lib/content";
-import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library, ChevronDown } from "lucide-react";
 
 export const Route = createFileRoute("/bibliotheque")({
   head: () => ({
