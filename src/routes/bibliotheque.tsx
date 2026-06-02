@@ -214,7 +214,7 @@ function BibliothequePage() {
                 <button onClick={downloadPDF} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold hover:bg-accent">
                   <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">PDF</span>
                 </button>
-                <button onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
+                <button onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
               </div>
             </div>
 
