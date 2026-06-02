@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { BOOKS } from "@/lib/content";
-import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library, ChevronDown } from "lucide-react";
 
 export const Route = createFileRoute("/bibliotheque")({
   head: () => ({
@@ -104,7 +105,7 @@ function BibliothequePage() {
   const [openBook, setOpenBook] = useState<(typeof BOOKS)[number] | null>(null);
   const [chapter, setChapter] = useState(1);
   const [speaking, setSpeaking] = useState(false);
-  const [verse, setVerse] = useState<{ ref: string; text: string } | null>(null);
+  const [openKw, setOpenKw] = useState<Record<string, boolean>>({});
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
@@ -191,7 +192,7 @@ function BibliothequePage() {
       {openBook && (
         <div
           className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 md:items-center md:p-4"
-          onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }}
+          onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }}
         >
           <div
             className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl"
@@ -213,7 +214,7 @@ function BibliothequePage() {
                 <button onClick={downloadPDF} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold hover:bg-accent">
                   <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">PDF</span>
                 </button>
-                <button onClick={() => { stopSpeak(); setOpenBook(null); setVerse(null); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
+                <button onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
               </div>
             </div>
 
@@ -226,13 +227,17 @@ function BibliothequePage() {
                     const v = verses[Number(m[1])];
                     if (!v) return null;
                     return (
-                      <button
-                        key={idx}
-                        onClick={() => setVerse(v)}
-                        className="mx-0.5 inline-flex items-center gap-1 rounded-sm bg-flame/10 px-1.5 py-0.5 align-baseline text-sm font-bold text-flame underline decoration-dotted underline-offset-2 hover:bg-flame/20"
-                      >
-                        <Quote className="h-3 w-3" />{v.ref}
-                      </button>
+                      <Popover key={idx}>
+                        <PopoverTrigger asChild>
+                          <button className="mx-0.5 inline-flex items-center gap-1 rounded-sm bg-flame/10 px-1.5 py-0.5 align-baseline text-sm font-bold text-flame underline decoration-dotted underline-offset-2 hover:bg-flame/20">
+                            <Quote className="h-3 w-3" />{v.ref}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent side="top" align="start" className="w-80 rounded-none border-l-4 border-flame p-4">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-flame">{v.ref}</p>
+                          <p className="mt-2 text-sm leading-relaxed text-foreground">{v.text}</p>
+                        </PopoverContent>
+                      </Popover>
                     );
                   }
                   return <span key={idx}>{part}</span>;
@@ -245,13 +250,18 @@ function BibliothequePage() {
                   <ul className="space-y-2">
                     {verses.map((v) => (
                       <li key={v.ref}>
-                        <button
-                          onClick={() => setVerse(v)}
-                          className="group inline-flex items-start gap-2 text-left text-sm hover:text-primary"
-                        >
-                          <Quote className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
-                          <span><span className="font-bold text-flame">{v.ref}</span> — <span className="underline-offset-2 group-hover:underline">{v.text.slice(0, 80)}…</span></span>
-                        </button>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="group inline-flex items-start gap-2 text-left text-sm hover:text-primary">
+                              <Quote className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
+                              <span><span className="font-bold text-flame">{v.ref}</span> — <span className="underline-offset-2 group-hover:underline">{v.text.slice(0, 80)}…</span></span>
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent side="top" align="start" className="w-80 rounded-none border-l-4 border-flame p-4">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-flame">{v.ref}</p>
+                            <p className="mt-2 text-sm leading-relaxed text-foreground">{v.text}</p>
+                          </PopoverContent>
+                        </Popover>
                       </li>
                     ))}
                   </ul>
@@ -266,13 +276,36 @@ function BibliothequePage() {
                   </div>
                   <div>
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-primary">Mots clés — dictionnaire biblique</p>
-                    <dl className="space-y-3">
+                    <p className="mb-3 text-xs text-muted-foreground">Cliquez sur un mot pour ouvrir ou fermer sa définition.</p>
+                    <div className="flex flex-wrap gap-2">
                       {SUMMARY_BY_BOOK[openBook.id].keywords.map((k) => (
-                        <div key={k.word} className="rounded-none border border-border bg-card p-3">
-                          <dt className="font-display text-sm font-bold text-flame">{k.word}</dt>
-                          <dd className="mt-1 text-sm text-foreground/80">{k.def}</dd>
-                        </div>
+                        <a
+                          key={k.word}
+                          href={`#kw-${k.word}`}
+                          onClick={(e) => { e.preventDefault(); setOpenKw((s) => ({ ...s, [k.word]: true })); document.getElementById(`kw-${k.word}`)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
+                          className="rounded-none border border-flame bg-flame/10 px-3 py-1 text-xs font-semibold text-flame hover:bg-flame hover:text-flame-foreground"
+                        >
+                          {k.word}
+                        </a>
                       ))}
+                    </div>
+                    <dl className="mt-4 space-y-2">
+                      {SUMMARY_BY_BOOK[openBook.id].keywords.map((k) => {
+                        const open = !!openKw[k.word];
+                        return (
+                          <div key={k.word} id={`kw-${k.word}`} className="rounded-none border border-border bg-card">
+                            <button
+                              onClick={() => setOpenKw((s) => ({ ...s, [k.word]: !s[k.word] }))}
+                              aria-expanded={open}
+                              className="flex w-full items-center justify-between gap-2 p-3 text-left"
+                            >
+                              <dt className="font-display text-sm font-bold text-flame">{k.word}</dt>
+                              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+                            </button>
+                            {open && <dd className="border-t border-border p-3 text-sm text-foreground/80">{k.def}</dd>}
+                          </div>
+                        );
+                      })}
                     </dl>
                   </div>
                 </div>
@@ -298,29 +331,9 @@ function BibliothequePage() {
               </button>
             </div>
           </div>
-
-          {/* Verse miniature — overlay sur la lecture */}
-          {verse && (
-            <div
-              className="fixed bottom-4 left-1/2 z-[60] w-[92vw] max-w-md -translate-x-1/2 rounded-none border-l-4 border-flame bg-card p-4 shadow-elegant md:bottom-8"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-flame">{verse.ref}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-foreground">{verse.text}</p>
-                </div>
-                <button onClick={() => setVerse(null)} className="rounded-full p-1 hover:bg-accent" aria-label="Fermer">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="mt-3 flex justify-end">
-                <button onClick={() => setVerse(null)} className="rounded-none bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">Continuer la lecture</button>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </Layout>
   );
 }
+
