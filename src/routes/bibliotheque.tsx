@@ -105,7 +105,7 @@ function BibliothequePage() {
   const [openBook, setOpenBook] = useState<(typeof BOOKS)[number] | null>(null);
   const [chapter, setChapter] = useState(1);
   const [speaking, setSpeaking] = useState(false);
-  const [verse, setVerse] = useState<{ ref: string; text: string } | null>(null);
+  const [openKw, setOpenKw] = useState<Record<string, boolean>>({});
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
