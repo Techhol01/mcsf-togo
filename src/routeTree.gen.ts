@@ -15,6 +15,7 @@ import { Route as ForumRouteImport } from './routes/forum'
 import { Route as EvenementsRouteImport } from './routes/evenements'
 import { Route as EnseignementRouteImport } from './routes/enseignement'
 import { Route as DonRouteImport } from './routes/don'
+import { Route as DictionnaireRouteImport } from './routes/dictionnaire'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BibliothequeRouteImport } from './routes/bibliotheque'
 import { Route as BibleRouteImport } from './routes/bible'
@@ -51,6 +52,11 @@ const DonRoute = DonRouteImport.update({
   path: '/don',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DictionnaireRoute = DictionnaireRouteImport.update({
+  id: '/dictionnaire',
+  path: '/dictionnaire',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/bible': typeof BibleRoute
   '/bibliotheque': typeof BibliothequeRoute
   '/blog': typeof BlogRoute
+  '/dictionnaire': typeof DictionnaireRoute
   '/don': typeof DonRoute
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/bible': typeof BibleRoute
   '/bibliotheque': typeof BibliothequeRoute
   '/blog': typeof BlogRoute
+  '/dictionnaire': typeof DictionnaireRoute
   '/don': typeof DonRoute
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/bible': typeof BibleRoute
   '/bibliotheque': typeof BibliothequeRoute
   '/blog': typeof BlogRoute
+  '/dictionnaire': typeof DictionnaireRoute
   '/don': typeof DonRoute
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/bible'
     | '/bibliotheque'
     | '/blog'
+    | '/dictionnaire'
     | '/don'
     | '/enseignement'
     | '/evenements'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/bible'
     | '/bibliotheque'
     | '/blog'
+    | '/dictionnaire'
     | '/don'
     | '/enseignement'
     | '/evenements'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/bible'
     | '/bibliotheque'
     | '/blog'
+    | '/dictionnaire'
     | '/don'
     | '/enseignement'
     | '/evenements'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   BibleRoute: typeof BibleRoute
   BibliothequeRoute: typeof BibliothequeRoute
   BlogRoute: typeof BlogRoute
+  DictionnaireRoute: typeof DictionnaireRoute
   DonRoute: typeof DonRoute
   EnseignementRoute: typeof EnseignementRoute
   EvenementsRoute: typeof EvenementsRoute
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dictionnaire': {
+      id: '/dictionnaire'
+      path: '/dictionnaire'
+      fullPath: '/dictionnaire'
+      preLoaderRoute: typeof DictionnaireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog': {
       id: '/blog'
       path: '/blog'
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   BibleRoute: BibleRoute,
   BibliothequeRoute: BibliothequeRoute,
   BlogRoute: BlogRoute,
+  DictionnaireRoute: DictionnaireRoute,
   DonRoute: DonRoute,
   EnseignementRoute: EnseignementRoute,
   EvenementsRoute: EvenementsRoute,
@@ -271,3 +292,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
