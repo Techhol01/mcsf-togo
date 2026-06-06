@@ -30,9 +30,40 @@ function PodcastPage() {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
+  const [downloaded, setDownloaded] = useState<Record<string, boolean>>({});
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Persist téléchargements
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try { setDownloaded(JSON.parse(localStorage.getItem("mcsf_podcast_dl") ?? "{}")); } catch {}
+  }, []);
+
+  const markDownloaded = async (id: string) => {
+    // Déclenche un vrai téléchargement avant d'autoriser l'écoute
+    try {
+      const res = await fetch(DEMO_AUDIO);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${id}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(DEMO_AUDIO, "_blank");
+    }
+    setDownloaded((prev) => {
+      const next = { ...prev, [id]: true };
+      try { localStorage.setItem("mcsf_podcast_dl", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
   const toggle = (id: string) => {
+    if (!downloaded[id]) return; // Lecture bloquée tant que pas téléchargé
     const a = audioRef.current;
     if (!a) return;
     if (playingId === id) {

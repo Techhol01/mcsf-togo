@@ -15,8 +15,14 @@ export const Route = createFileRoute("/enseignement")({
   component: EnseignementPage,
 });
 
-const LIKE_BASE = 2000;
-const LS_KEY = "mcsf_video_likes_v1";
+const LS_KEY = "mcsf_video_likes_v2";
+
+// Baseline like-count déterministe par vidéo (différent pour chaque vidéo)
+function baseLikes(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return 850 + (h % 4200);
+}
 
 function EnseignementPage() {
   const [active, setActive] = useState(VIDEOS[0]);
@@ -36,7 +42,7 @@ function EnseignementPage() {
     });
   };
 
-  const count = (id: string) => LIKE_BASE + (liked[id] ? 1 : 0);
+  const count = (id: string) => baseLikes(id) + (liked[id] ? 1 : 0);
 
   const selectVideo = (v: (typeof VIDEOS)[number]) => {
     setActive(v);
@@ -70,15 +76,18 @@ function EnseignementPage() {
       <section className="container-page grid gap-8 py-10 lg:grid-cols-[1fr_360px]">
         <div>
           <div className="overflow-hidden rounded-none border border-border bg-card shadow-soft">
-            <div className="aspect-video w-full bg-black">
+            <div className="relative aspect-video w-full bg-black">
               <iframe
                 key={active.id}
-                src={`https://www.youtube.com/embed/${active.id}?autoplay=1&mute=1&rel=0`}
+                src={`https://www.youtube-nocookie.com/embed/${active.id}?autoplay=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&controls=1&fs=1&playsinline=1`}
                 title={active.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
                 className="h-full w-full"
               />
+              {/* Masque le logo YouTube en haut à droite */}
+              <div className="pointer-events-none absolute right-0 top-0 h-10 w-28 bg-black" />
+              <div className="pointer-events-none absolute right-0 bottom-10 h-8 w-8 bg-black/0" />
             </div>
             <div className="p-5">
               <h2 className="font-display text-xl font-semibold text-foreground">{active.title}</h2>
