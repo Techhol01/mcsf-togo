@@ -1,14 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Youtube, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import logo from "@/assets/mcsf-logo-official.png";
-
-const RECENT_POSTS = [
-  { to: "/blog", title: "L'Armageddon : ce que dit l'Écriture" },
-  { to: "/blog", title: "Ils crieront — Apocalypse 6" },
-  { to: "/blog", title: "Préparer son cœur pour le retour de Christ" },
-];
+import { ARTICLES } from "@/lib/content";
 
 export function Footer() {
+  const recent = ARTICLES.slice(0, 3);
   return (
     <footer className="mt-16 border-t border-border bg-primary text-primary-foreground">
       <div className="container-page grid gap-10 py-12 md:grid-cols-4">
@@ -36,6 +32,7 @@ export function Footer() {
             <li><Link to="/enseignement" className="hover:text-flame">Enseignements</Link></li>
             <li><Link to="/podcast" className="hover:text-flame">Podcasts</Link></li>
             <li><Link to="/bibliotheque" className="hover:text-flame">Bibliothèque</Link></li>
+            <li><Link to="/dictionnaire" className="hover:text-flame">Dictionnaire biblique</Link></li>
             <li><Link to="/evenements" className="hover:text-flame">Événements</Link></li>
           </ul>
         </div>
@@ -43,9 +40,17 @@ export function Footer() {
         <div>
           <h4 className="font-display text-sm font-bold uppercase tracking-wider">Dernier du blog</h4>
           <ul className="mt-4 space-y-3 text-sm text-primary-foreground/85">
-            {RECENT_POSTS.map((p) => (
-              <li key={p.title}>
-                <Link to={p.to} className="leading-snug hover:text-flame">{p.title}</Link>
+            {recent.map((p) => (
+              <li key={p.id}>
+                <Link to="/blog" className="group flex items-start gap-3 hover:text-flame">
+                  <img
+                    src={p.cover}
+                    alt={p.title}
+                    className="h-12 w-12 shrink-0 object-cover ring-1 ring-white/15"
+                    loading="lazy"
+                  />
+                  <span className="leading-snug line-clamp-2">{p.title}</span>
+                </Link>
               </li>
             ))}
           </ul>
