@@ -5,6 +5,7 @@ export const NAV_ITEMS = [
   { to: "/podcast", label: "Podcast" },
   { to: "/bibliotheque", label: "Bibliothèque" },
   { to: "/bible", label: "Bible" },
+  { to: "/dictionnaire", label: "Dictionnaire" },
   { to: "/forum", label: "Forum" },
   { to: "/evenements", label: "Événements" },
 ] as const;
@@ -23,7 +24,8 @@ export const MEGA_MENU = [
     items: [
       { to: "/bible", label: "La Bible", desc: "Lire, écouter, plans de lecture" },
       { to: "/bibliotheque", label: "Bibliothèque", desc: "Livres du Pasteur ADAM" },
-      { to: "/forum", label: "Forum de prière", desc: "Requêtes & témoignages" },
+      { to: "/dictionnaire", label: "Dictionnaire biblique", desc: "Mots & explications bibliques" },
+      { to: "/forum", label: "Forum communautaire", desc: "Discussions & prière" },
     ],
   },
   {

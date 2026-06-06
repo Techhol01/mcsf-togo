@@ -1,15 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { Menu } from "lucide-react";
 import logo from "@/assets/mcsf-logo-official.png";
-import { NAV_ITEMS, MEGA_MENU } from "@/lib/nav";
+import { NAV_ITEMS } from "@/lib/nav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 
 import { GlobalSearch } from "@/components/GlobalSearch";
 
 export function ModernHeader() {
-  const [megaOpen, setMegaOpen] = useState<string | null>(null);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between gap-4">
@@ -23,39 +20,17 @@ export function ModernHeader() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          <Link
-            to="/"
-            className="rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
-            activeProps={{ className: "rounded-md px-3 py-2 text-sm font-bold text-primary bg-accent" }}
-            activeOptions={{ exact: true }}
-          >
-            Accueil
-          </Link>
-          {MEGA_MENU.map((group) => (
-            <div
-              key={group.label}
-              onMouseEnter={() => setMegaOpen(group.label)}
-              onMouseLeave={() => setMegaOpen(null)}
-              className="relative"
+        <nav className="hidden items-center gap-0.5 lg:flex">
+          {NAV_ITEMS.map((it) => (
+            <Link
+              key={it.to}
+              to={it.to}
+              className="rounded-md px-2.5 py-2 text-[13px] font-medium hover:bg-accent"
+              activeProps={{ className: "rounded-md px-2.5 py-2 text-[13px] font-bold text-primary bg-accent" }}
+              activeOptions={{ exact: it.to === "/" }}
             >
-              <button className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent">
-                {group.label}
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-              {megaOpen === group.label && (
-                <div className="absolute left-1/2 top-full w-72 -translate-x-1/2 pt-2">
-                  <div className="rounded-xl border border-border bg-popover p-2 shadow-soft">
-                    {group.items.map((it) => (
-                      <Link key={it.to} to={it.to} className="block rounded-lg p-3 hover:bg-accent">
-                        <div className="text-sm font-semibold text-foreground">{it.label}</div>
-                        <div className="text-xs text-muted-foreground">{it.desc}</div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+              {it.label}
+            </Link>
           ))}
         </nav>
 
