@@ -165,9 +165,10 @@ function ContentTable({ table, fields }: { table: "articles" | "books" | "videos
     e.preventDefault();
     const payload = { ...form };
     fields.forEach((f) => { if (f.type === "number" && payload[f.name]) payload[f.name] = Number(payload[f.name]); });
+    const client = supabase.from(table) as any;
     const { error } = editing
-      ? await supabase.from(table).update(payload).eq("id", editing)
-      : await supabase.from(table).insert(payload);
+      ? await client.update(payload).eq("id", editing)
+      : await client.insert(payload);
     if (error) toast.error(error.message);
     else { toast.success(editing ? "Mis à jour" : "Ajouté"); setForm({}); setEditing(null); load(); }
   };

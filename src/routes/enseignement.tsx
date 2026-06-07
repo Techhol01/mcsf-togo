@@ -85,9 +85,6 @@ function EnseignementPage() {
                 allowFullScreen
                 className="h-full w-full"
               />
-              {/* Masque le logo YouTube en haut à droite */}
-              <div className="pointer-events-none absolute right-0 top-0 h-10 w-28 bg-black" />
-              <div className="pointer-events-none absolute right-0 bottom-10 h-8 w-8 bg-black/0" />
             </div>
             <div className="p-5">
               <h2 className="font-display text-xl font-semibold text-foreground">{active.title}</h2>

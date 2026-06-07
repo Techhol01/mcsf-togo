@@ -72,6 +72,8 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs text-primary-foreground/70">
         © {new Date().getFullYear()} Mission Christ Sans Frontière (MCSF) — Tous droits réservés.
+        {" • "}
+        <Link to="/mentions-legales" className="underline hover:text-flame">Mentions légales</Link>
       </div>
     </footer>
   );
