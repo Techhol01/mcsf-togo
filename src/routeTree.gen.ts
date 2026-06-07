@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as PodcastRouteImport } from './routes/podcast'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as EvenementsRouteImport } from './routes/evenements'
 import { Route as EnseignementRouteImport } from './routes/enseignement'
@@ -20,7 +21,9 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BibliothequeRouteImport } from './routes/bibliotheque'
 import { Route as BibleRouteImport } from './routes/bible'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const ProfilRoute = ProfilRouteImport.update({
   id: '/profil',
@@ -30,6 +33,11 @@ const ProfilRoute = ProfilRouteImport.update({
 const PodcastRoute = PodcastRouteImport.update({
   id: '/podcast',
   path: '/podcast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForumRoute = ForumRouteImport.update({
@@ -77,10 +85,19 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -94,8 +111,10 @@ export interface FileRoutesByFullPath {
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
   '/forum': typeof ForumRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/podcast': typeof PodcastRoute
   '/profil': typeof ProfilRoute
+  '/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -108,12 +127,15 @@ export interface FileRoutesByTo {
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
   '/forum': typeof ForumRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/podcast': typeof PodcastRoute
   '/profil': typeof ProfilRoute
+  '/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/bible': typeof BibleRoute
   '/bibliotheque': typeof BibliothequeRoute
@@ -123,8 +145,10 @@ export interface FileRoutesById {
   '/enseignement': typeof EnseignementRoute
   '/evenements': typeof EvenementsRoute
   '/forum': typeof ForumRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/podcast': typeof PodcastRoute
   '/profil': typeof ProfilRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -139,8 +163,10 @@ export interface FileRouteTypes {
     | '/enseignement'
     | '/evenements'
     | '/forum'
+    | '/mentions-legales'
     | '/podcast'
     | '/profil'
+    | '/admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,11 +179,14 @@ export interface FileRouteTypes {
     | '/enseignement'
     | '/evenements'
     | '/forum'
+    | '/mentions-legales'
     | '/podcast'
     | '/profil'
+    | '/admin'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/bible'
     | '/bibliotheque'
@@ -167,12 +196,15 @@ export interface FileRouteTypes {
     | '/enseignement'
     | '/evenements'
     | '/forum'
+    | '/mentions-legales'
     | '/podcast'
     | '/profil'
+    | '/_authenticated/admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BibleRoute: typeof BibleRoute
   BibliothequeRoute: typeof BibliothequeRoute
@@ -182,6 +214,7 @@ export interface RootRouteChildren {
   EnseignementRoute: typeof EnseignementRoute
   EvenementsRoute: typeof EvenementsRoute
   ForumRoute: typeof ForumRoute
+  MentionsLegalesRoute: typeof MentionsLegalesRoute
   PodcastRoute: typeof PodcastRoute
   ProfilRoute: typeof ProfilRoute
 }
@@ -200,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/podcast'
       fullPath: '/podcast'
       preLoaderRoute: typeof PodcastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forum': {
@@ -265,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -272,11 +319,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BibleRoute: BibleRoute,
   BibliothequeRoute: BibliothequeRoute,
@@ -286,19 +352,10 @@ const rootRouteChildren: RootRouteChildren = {
   EnseignementRoute: EnseignementRoute,
   EvenementsRoute: EvenementsRoute,
   ForumRoute: ForumRoute,
+  MentionsLegalesRoute: MentionsLegalesRoute,
   PodcastRoute: PodcastRoute,
   ProfilRoute: ProfilRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -316,9 +316,11 @@ function ForumPage() {
           </div>
         </div>
 
-        <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          Mode démo — les messages sont stockés localement sur cet appareil. Pour un vrai chat temps réel multi-utilisateurs, activez Lovable Cloud.
-        </p>
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="rounded-lg border border-border bg-card p-2"><div className="font-display text-lg font-bold text-flame">{GROUPS.length}</div><div className="text-muted-foreground">Groupes</div></div>
+          <div className="rounded-lg border border-border bg-card p-2"><div className="font-display text-lg font-bold text-flame">{GROUPS.reduce((s, g) => s + g.members, 0).toLocaleString("fr-FR")}</div><div className="text-muted-foreground">Membres</div></div>
+          <div className="rounded-lg border border-border bg-card p-2"><div className="font-display text-lg font-bold text-flame">{msgs.length.toLocaleString("fr-FR")}</div><div className="text-muted-foreground">Discussions</div></div>
+        </div>
       </section>
     </Layout>
   );
