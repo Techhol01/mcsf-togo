@@ -133,7 +133,7 @@ function PodcastPage() {
 
                 {!downloaded[p.id] && (
                   <p className="mt-3 rounded-md bg-accent/60 px-3 py-2 text-xs text-muted-foreground">
-                    Téléchargez d'abord l'audio pour pouvoir l'écouter hors ligne.
+                    Téléchargez l'audio pour activer la lecture hors ligne.
                   </p>
                 )}
 

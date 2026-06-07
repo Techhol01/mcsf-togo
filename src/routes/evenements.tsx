@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { EVENTS } from "@/lib/content";
 import { Calendar, MapPin, Check, CalendarDays } from "lucide-react";
+import { EventRegistrationDialog } from "@/components/EventRegistrationDialog";
 
 export const Route = createFileRoute("/evenements")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/evenements")({
 function EvenementsPage() {
   const [filter, setFilter] = useState<"upcoming" | "past">("upcoming");
   const [registered, setRegistered] = useState<Set<string>>(new Set());
+  const [openEvent, setOpenEvent] = useState<typeof EVENTS[number] | null>(null);
   const visible = EVENTS.filter((e) => e.status === filter);
   const [featured, ...rest] = visible;
 
@@ -61,7 +63,7 @@ function EvenementsPage() {
                 </div>
                 {featured.status === "upcoming" && (
                   <button
-                    onClick={() => setRegistered((s) => new Set(s).add(featured.id))}
+                    onClick={() => setOpenEvent(featured)}
                     disabled={registered.has(featured.id)}
                     className={`mt-4 inline-flex items-center gap-2 rounded-none px-5 py-2 text-sm font-semibold transition ${registered.has(featured.id) ? "bg-emerald-600 text-white" : "bg-flame text-flame-foreground hover:opacity-90"}`}
                   >
@@ -90,7 +92,7 @@ function EvenementsPage() {
                     </div>
                     {e.status === "upcoming" && (
                       <button
-                        onClick={() => setRegistered((s) => new Set(s).add(e.id))}
+                        onClick={() => setOpenEvent(e)}
                         disabled={registered.has(e.id)}
                         className={`mt-2 w-fit rounded-none px-3 py-1 text-[11px] font-semibold ${registered.has(e.id) ? "bg-emerald-600 text-white" : "bg-flame text-flame-foreground hover:opacity-90"}`}
                       >
@@ -112,6 +114,13 @@ function EvenementsPage() {
           <p className="text-sm text-muted-foreground">Aucun événement {filter === "upcoming" ? "à venir" : "passé"} pour le moment.</p>
         )}
       </section>
+      {openEvent && (
+        <EventRegistrationDialog
+          event={openEvent}
+          onClose={() => setOpenEvent(null)}
+          onSuccess={() => setRegistered((s) => new Set(s).add(openEvent.id))}
+        />
+      )}
     </Layout>
   );
 }
