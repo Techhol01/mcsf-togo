@@ -102,7 +102,7 @@ function AuthPage() {
             </button>
 
             <p className="pt-2 text-center text-[11px] text-muted-foreground">
-              Admin : connectez-vous avec <strong>admin@mcsf.org</strong>
+              Admin : connectez-vous avec <strong>holfreehol@gmail.com</strong>
             </p>
           </form>
         </div>
