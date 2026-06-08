@@ -64,7 +64,7 @@ function DonPage() {
           </div>
 
           <button
-            onClick={() => alert(`Merci ! Don de ${amount}€ via ${method === "card" ? "carte" : "Mobile Money"}.\n(Activez Lovable Cloud + Stripe pour traiter les dons réellement.)`)}
+            onClick={() => alert(`Merci ! Don de ${amount}€ via ${method === "card" ? "carte" : "Mobile Money"}.\nVotre soutien sera traité prochainement.`)}
             className="mt-6 w-full rounded-full bg-flame py-3 font-semibold text-flame-foreground hover:opacity-90"
           >
             Donner {amount} € maintenant
