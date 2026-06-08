@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Loader2, Check } from "lucide-react";
+import { X, Loader2, Check, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -25,6 +25,21 @@ export function EventRegistrationDialog({
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", city: "", church: "", message: "" });
+
+  // Fermer avec Escape + support du bouton retour navigateur
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    // Push une entrée d'historique pour intercepter le bouton retour
+    try { window.history.pushState({ mcsfDialog: true }, ""); } catch {}
+    const onPop = () => onClose();
+    window.addEventListener("popstate", onPop);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("popstate", onPop);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +71,10 @@ export function EventRegistrationDialog({
         <div className="relative h-40 w-full overflow-hidden sm:h-56">
           <img src={event.cover} alt={event.title} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
-          <button onClick={onClose} className="absolute right-3 top-3 rounded-full bg-black/40 p-2 text-white backdrop-blur hover:bg-black/60">
+          <button onClick={onClose} className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:bg-black/60" aria-label="Retour">
+            <ArrowLeft className="h-3.5 w-3.5" /> Retour
+          </button>
+          <button onClick={onClose} className="absolute right-3 top-3 rounded-full bg-black/40 p-2 text-white backdrop-blur hover:bg-black/60" aria-label="Fermer">
             <X className="h-4 w-4" />
           </button>
           <div className="absolute inset-x-0 bottom-0 p-5 text-white">

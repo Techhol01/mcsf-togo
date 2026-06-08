@@ -22,7 +22,7 @@ function MentionsPage() {
         <p>Le présent site est édité par <strong>Mission Christ Sans Frontière (MCSF)</strong>, œuvre missionnaire dirigée par le Pasteur ADAM Aboudaminou, située au Centre Rehoboth, Notse, Togo.</p>
 
         <h2 className="mt-6 font-display text-xl font-bold">2. Hébergement</h2>
-        <p>Site hébergé sur l'infrastructure cloud Lovable.</p>
+        <p>Le site est hébergé sur une infrastructure cloud sécurisée, accessible 24h/24 sur l'ensemble du territoire.</p>
 
         <h2 className="mt-6 font-display text-xl font-bold">3. Propriété intellectuelle</h2>
         <p>L'ensemble des contenus (textes, images, vidéos, podcasts, livres) présents sur ce site est la propriété exclusive de la MCSF, sauf mention contraire. Toute reproduction ou diffusion sans autorisation préalable est interdite.</p>

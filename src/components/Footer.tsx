@@ -70,10 +70,11 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-primary-foreground/70">
-        © {new Date().getFullYear()} Mission Christ Sans Frontière (MCSF) — Tous droits réservés.
-        {" • "}
-        <Link to="/mentions-legales" className="underline hover:text-flame">Mentions légales</Link>
+      <div className="border-t border-white/10 px-4 py-4 pb-20 md:pb-4 text-center text-[11px] leading-relaxed text-primary-foreground/80">
+        <div>© {new Date().getFullYear()} Mission Christ Sans Frontière (MCSF) — Tous droits réservés.</div>
+        <div className="mt-1">
+          <Link to="/mentions-legales" className="underline hover:text-flame">Mentions légales</Link>
+        </div>
       </div>
     </footer>
   );
