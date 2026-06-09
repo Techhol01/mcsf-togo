@@ -495,7 +495,5 @@ function FeedbackDialog({ bookId, bookTitle, onClose }: { bookId: string; bookTi
     </div>
   );
 }
-    </Layout>
-  );
-}
+
 
