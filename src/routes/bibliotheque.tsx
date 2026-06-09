@@ -333,6 +333,25 @@ function BibliothequePage() {
                   </div>
                 </div>
               )}
+              {chapter === openBook.chapters && (
+                <div className="mt-8 rounded-lg border-2 border-flame/40 bg-flame/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-flame" />
+                    <div className="flex-1">
+                      <h4 className="font-display text-lg font-bold text-foreground">Vous avez terminé ce livre 🎉</h4>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Partagez avec l'auteur ce que vous avez retenu, ou posez-lui une question. C'est optionnel mais cela l'aide beaucoup.
+                      </p>
+                      <button
+                        onClick={() => setFeedbackOpen(true)}
+                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-flame px-4 py-2 text-sm font-semibold text-flame-foreground hover:opacity-90"
+                      >
+                        <MessageCircle className="h-4 w-4" /> Écrire un résumé ou poser une question
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
 
@@ -344,18 +363,138 @@ function BibliothequePage() {
               >
                 <ChevronLeft className="h-4 w-4" /> Précédent
               </button>
-              <span className="hidden text-xs text-muted-foreground sm:block">Lecture à votre rythme</span>
-              <button
-                disabled={chapter === openBook.chapters}
-                onClick={() => { stopSpeak(); setChapter((c) => Math.min(openBook.chapters, c + 1)); }}
-                className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40"
-              >
-                Suivant <ChevronRight className="h-4 w-4" />
-              </button>
+              <span className="hidden text-xs text-muted-foreground sm:block">Lecture à votre rythme — reprise automatique</span>
+              {chapter === openBook.chapters ? (
+                <button
+                  onClick={() => setFeedbackOpen(true)}
+                  className="inline-flex items-center gap-1 rounded-full bg-flame px-4 py-2 text-sm font-semibold text-flame-foreground hover:opacity-90"
+                >
+                  Terminer <CheckCircle2 className="h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => { stopSpeak(); setChapter((c) => Math.min(openBook.chapters, c + 1)); }}
+                  className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                >
+                  Suivant <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
+
+          {feedbackOpen && (
+            <FeedbackDialog
+              bookId={openBook.id}
+              bookTitle={openBook.title}
+              onClose={() => setFeedbackOpen(false)}
+            />
+          )}
         </div>
       )}
+    </Layout>
+  );
+}
+
+function FeedbackDialog({ bookId, bookTitle, onClose }: { bookId: string; bookTitle: string; onClose: () => void }) {
+  const [kind, setKind] = useState<"summary" | "question">("summary");
+  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const submit = async () => {
+    if (message.trim().length < 5) {
+      toast.error("Veuillez écrire au moins 5 caractères.");
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.from("reader_feedback").insert({
+      book_id: bookId,
+      book_title: bookTitle,
+      kind,
+      message: message.trim(),
+      user_name: name.trim() || null,
+      user_email: email.trim() || null,
+    });
+    setSending(false);
+    if (error) {
+      toast.error("Envoi impossible. Réessayez.");
+      return;
+    }
+    toast.success("Merci ! Votre message a été envoyé à l'auteur.");
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl bg-card p-5 shadow-elegant"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-start justify-between gap-2">
+          <div>
+            <h3 className="font-display text-lg font-bold text-foreground">Partager avec l'auteur</h3>
+            <p className="text-xs text-muted-foreground">{bookTitle}</p>
+          </div>
+          <button onClick={onClose} className="rounded-full p-1 hover:bg-accent"><X className="h-4 w-4" /></button>
+        </div>
+
+        <div className="mb-3 inline-flex rounded-full border border-border p-1">
+          <button
+            onClick={() => setKind("summary")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${kind === "summary" ? "bg-flame text-flame-foreground" : "text-muted-foreground"}`}
+          >
+            Résumé
+          </button>
+          <button
+            onClick={() => setKind("question")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${kind === "question" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+          >
+            Question
+          </button>
+        </div>
+
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value.slice(0, 4000))}
+          rows={6}
+          placeholder={kind === "summary" ? "Ce que j'ai retenu de ce livre…" : "Ma question à l'auteur…"}
+          className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none focus:border-primary"
+        />
+        <p className="mt-1 text-right text-[10px] text-muted-foreground">{message.length}/4000</p>
+
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value.slice(0, 160))}
+            placeholder="Votre nom (optionnel)"
+            className="rounded-lg border border-border bg-background p-2 text-sm outline-none focus:border-primary"
+          />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value.slice(0, 255))}
+            placeholder="Votre email (optionnel)"
+            className="rounded-lg border border-border bg-background p-2 text-sm outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="mt-4 flex justify-end gap-2">
+          <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm">Annuler</button>
+          <button
+            onClick={submit}
+            disabled={sending}
+            className="inline-flex items-center gap-2 rounded-full bg-flame px-5 py-2 text-sm font-semibold text-flame-foreground disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" /> {sending ? "Envoi…" : "Envoyer"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
     </Layout>
   );
 }
