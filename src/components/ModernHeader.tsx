@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Mail, Phone } from "lucide-react";
+import { Menu, Mail, Phone, HandHeart } from "lucide-react";
 import logo from "@/assets/mcsf-logo-official.png";
 import { NAV_ITEMS } from "@/lib/nav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -63,9 +63,10 @@ export function ModernHeader() {
           </div>
           <Link
             to="/don"
-            className="hidden rounded-full bg-gradient-flame px-4 py-2 text-sm font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-full bg-gradient-flame px-4 py-2 text-sm font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex"
           >
-            {t("cta.donate")}
+            <HandHeart className="h-4 w-4" />
+            <span>{t("cta.donate")}</span>
           </Link>
 
           {/* Mobile sidebar */}
@@ -89,9 +90,12 @@ export function ModernHeader() {
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-1 p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <div className="flex-1"><GlobalSearch trigger="input" /></div>
-                  <LanguageSwitcher compact />
+                <div className="mb-3 flex flex-col gap-2">
+                  <GlobalSearch trigger="input" />
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Langue</span>
+                    <LanguageSwitcher />
+                  </div>
                 </div>
                 {NAV_ITEMS.map((it) => (
                   <SheetClose asChild key={it.to}>
@@ -106,7 +110,8 @@ export function ModernHeader() {
                   </SheetClose>
                 ))}
                 <SheetClose asChild>
-                  <Link to="/don" className="mt-3 rounded-full bg-gradient-flame px-4 py-2 text-center text-sm font-semibold text-flame-foreground">
+                  <Link to="/don" className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-flame px-4 py-2 text-center text-sm font-semibold text-flame-foreground">
+                    <HandHeart className="h-4 w-4" />
                     {t("cta.donate")}
                   </Link>
                 </SheetClose>
