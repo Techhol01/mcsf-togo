@@ -161,6 +161,39 @@ export type Database = {
         }
         Relationships: []
       }
+      reader_feedback: {
+        Row: {
+          book_id: string
+          book_title: string
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          user_email: string | null
+          user_name: string | null
+        }
+        Insert: {
+          book_id: string
+          book_title: string
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          user_email?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          book_id?: string
+          book_title?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          user_email?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
