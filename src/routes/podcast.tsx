@@ -2,15 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
-import { PODCASTS } from "@/lib/content";
-import { Play, Pause, Download, Radio, Volume2, VolumeX, Video, X } from "lucide-react";
-import pastorImg from "@/assets/hero-2.jpg";
+import { Play, Pause, Download, Radio, Volume2, VolumeX, X } from "lucide-react";
+import hero1 from "@/assets/hero-1.jpg";
+import hero2 from "@/assets/hero-2.jpg";
+import hero3 from "@/assets/hero-3.jpg";
+import imgCroix from "@/assets/book-croix.jpg";
+import imgMys from "@/assets/book-mysteres.jpg";
+import imgRec from "@/assets/book-reconcilier.jpg";
+import imgArm from "@/assets/article-armageddon.jpg";
+import imgRev from "@/assets/article-revelation.jpg";
+import imgEsp from "@/assets/article-esperance.jpg";
 
 export const Route = createFileRoute("/podcast")({
   head: () => ({
     meta: [
       { title: "Podcast — MCSF" },
-      { name: "description", content: "Émissions audio à télécharger et à écouter — MCSF." },
+      { name: "description", content: "Messages audio du Pasteur ADAM Aboudaminou — à télécharger et écouter." },
     ],
   }),
   component: PodcastPage,
@@ -18,19 +25,20 @@ export const Route = createFileRoute("/podcast")({
 
 const DEMO_AUDIO = "https://cdn.pixabay.com/audio/2022/10/30/audio_347ce3a17a.mp3";
 
-// Liste enrichie façon Kanguka — chaque émission a date / heure / type
-type Item = { id: string; title: string; date: string; time: string; type: "audio" | "video"; duration: string };
+type Item = { id: string; title: string; date: string; time: string; duration: string; image: string };
 
+// Émissions audio du Pasteur ADAM Aboudaminou uniquement
 const ITEMS: Item[] = [
-  { id: "k-sa-06", title: "Kanguka de Samedi le 06/06/2026", date: "6 juin 2026", time: "07:00", type: "audio", duration: "32:14" },
-  { id: "f-05",    title: "Vidéo Flash : L'ange de Dieu intervient quand tu changes …", date: "5 juin 2026", time: "09:00", type: "video", duration: "08:20" },
-  { id: "k-ve-05", title: "Kanguka de Vendredi le 05/06/2026", date: "5 juin 2026", time: "04:00", type: "audio", duration: "31:08" },
-  { id: "k-je-04", title: "Kanguka de Jeudi le 04/06/2026", date: "4 juin 2026", time: "04:00", type: "audio", duration: "29:45" },
-  { id: "f-03",    title: "Vidéo Flash : Dis à la montagne combien ton Dieu …", date: "3 juin 2026", time: "09:00", type: "video", duration: "07:55" },
-  { id: "k-me-03", title: "Kanguka de Mercredi le 03/06/2026", date: "3 juin 2026", time: "04:00", type: "audio", duration: "30:22" },
-  { id: "k-ma-02", title: "Kanguka de Mardi le 02/06/2026", date: "2 juin 2026", time: "04:00", type: "audio", duration: "28:48" },
-  { id: "k-lu-01", title: "Kanguka de Lundi le 01/06/2026", date: "1 juin 2026", time: "04:00", type: "audio", duration: "33:01" },
-  ...PODCASTS.map((p, i) => ({ id: p.id, title: p.title, date: `émission ${i + 1}`, time: "—", type: "audio" as const, duration: p.duration })),
+  { id: "pa-01", title: "La grâce qui sauve — Pasteur ADAM", date: "6 juin 2026", time: "07:00", duration: "32:14", image: imgCroix },
+  { id: "pa-02", title: "La prière du juste — méditation", date: "5 juin 2026", time: "04:00", duration: "18:42", image: imgEsp },
+  { id: "pa-03", title: "Vivre par l'Esprit — enseignement", date: "4 juin 2026", time: "04:00", duration: "45:09", image: imgMys },
+  { id: "pa-04", title: "Le Berger fidèle — méditation", date: "3 juin 2026", time: "04:00", duration: "21:30", image: imgRec },
+  { id: "pa-05", title: "L'Armageddon expliqué — Pasteur ADAM", date: "2 juin 2026", time: "07:00", duration: "38:55", image: imgArm },
+  { id: "pa-06", title: "Préparer son cœur pour le retour de Christ", date: "1 juin 2026", time: "07:00", duration: "29:12", image: hero1 },
+  { id: "pa-07", title: "La Révélation parfaite — étude", date: "30 mai 2026", time: "07:00", duration: "41:08", image: imgRev },
+  { id: "pa-08", title: "Soyez réconciliés avec Dieu", date: "28 mai 2026", time: "07:00", duration: "27:33", image: hero2 },
+  { id: "pa-09", title: "Les mystères de la Croix — partie 1", date: "26 mai 2026", time: "07:00", duration: "34:50", image: hero3 },
+  { id: "pa-10", title: "Marcher dans la sainteté", date: "24 mai 2026", time: "07:00", duration: "25:18", image: imgEsp },
 ];
 
 function fmt(s: number) {
@@ -78,7 +86,6 @@ function PodcastPage() {
 
   const togglePlay = (it: Item) => {
     if (!downloaded[it.id]) {
-      // Lance le téléchargement puis débloque la lecture
       triggerDownload(it.id);
       return;
     }
@@ -119,8 +126,8 @@ function PodcastPage() {
   return (
     <Layout>
       <PageBanner
-        title="Émissions"
-        subtitle="Écoutez et téléchargez les enseignements du Pasteur ADAM."
+        title="Émissions audio"
+        subtitle="Messages du Pasteur ADAM Aboudaminou — téléchargez puis écoutez à votre rythme."
         image="hero3"
         icon={<Radio className="h-7 w-7 text-flame" />}
       />
@@ -131,24 +138,20 @@ function PodcastPage() {
             {ITEMS.map((it) => {
               const dl = !!downloaded[it.id];
               const isPlaying = playingId === it.id;
-              const isVideo = it.type === "video";
               return (
                 <li key={it.id} className="flex items-center gap-3 px-3 py-3 sm:px-4 sm:py-4">
-                  {/* Thumbnail */}
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md sm:h-16 sm:w-16">
-                    <img src={pastorImg} alt="" loading="lazy" className="h-full w-full object-cover" />
+                    <img src={it.image} alt="" loading="lazy" className="h-full w-full object-cover" />
                   </div>
 
-                  {/* Title / Meta */}
                   <div className="min-w-0 flex-1">
                     <h3 className="line-clamp-2 text-sm font-semibold text-foreground sm:text-[15px]">{it.title}</h3>
                     <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                      {it.date} • {it.time}
+                      {it.date} • {it.time} • {it.duration}
                       {dl && <span className="ml-2 font-semibold text-primary">• Téléchargé</span>}
                     </p>
                   </div>
 
-                  {/* Action button */}
                   <button
                     onClick={() => togglePlay(it)}
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition ${
@@ -165,9 +168,7 @@ function PodcastPage() {
                       ? <Pause className="h-5 w-5" />
                       : dl
                         ? <Play className="h-5 w-5 translate-x-0.5" />
-                        : isVideo
-                          ? <Video className="h-5 w-5" />
-                          : <Download className="h-5 w-5" />}
+                        : <Download className="h-5 w-5" />}
                   </button>
                 </li>
               );
@@ -176,11 +177,10 @@ function PodcastPage() {
         </div>
       </section>
 
-      {/* ===== Lecteur sticky en bas (visible pendant lecture) ===== */}
       {playingItem && (
         <div className="fixed inset-x-0 bottom-16 z-40 border-t border-border bg-card/95 px-3 py-3 shadow-elegant backdrop-blur md:bottom-0">
           <div className="container-page flex items-center gap-3">
-            <img src={pastorImg} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
+            <img src={playingItem.image} alt="" className="h-10 w-10 shrink-0 rounded-md object-cover" />
             <div className="min-w-0 flex-1">
               <p className="line-clamp-1 text-xs font-semibold text-foreground">{playingItem.title}</p>
               <div className="mt-1 flex items-center gap-2">

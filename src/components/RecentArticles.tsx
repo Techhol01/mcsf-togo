@@ -30,7 +30,7 @@ export function RecentArticles() {
                 {a.title}
               </h3>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{a.excerpt}</p>
-              <div className="mt-auto flex items-center gap-1 pt-2 text-[11px] text-muted-foreground">
+              <div className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
                 <Calendar className="h-3 w-3" />
                 <span>{new Date(a.date).toLocaleDateString("fr-FR")}</span>
               </div>

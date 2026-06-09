@@ -82,9 +82,9 @@ export function GlobalSearch({ trigger }: { trigger?: "icon" | "input" }) {
       {trigger === "input" ? (
         <button
           onClick={() => setOpen(true)}
-          className="flex w-full items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent"
+          className="flex w-full min-w-0 items-center gap-2 truncate rounded-full border border-border bg-secondary/60 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent"
         >
-          <Search className="h-4 w-4" /> Rechercher dans tout le site...
+          <Search className="h-4 w-4 shrink-0" /> <span className="truncate">Rechercher dans tout le site...</span>
         </button>
       ) : (
         <button

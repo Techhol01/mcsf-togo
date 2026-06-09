@@ -92,11 +92,11 @@ function BlogPage() {
               <div className="flex flex-1 flex-col p-5">
                 <h2 className="font-display text-lg font-bold text-foreground group-hover:text-primary line-clamp-2">{a.title}</h2>
                 <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{a.excerpt}</p>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1"><User className="h-3 w-3" /> {a.author}</span>
                   <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.date).toLocaleDateString("fr-FR")}</span>
                 </div>
-                <button onClick={() => setActive(a)} className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                <button onClick={() => setActive(a)} className="mt-3 inline-flex w-fit items-center gap-1 text-sm font-semibold text-primary hover:underline">
                   Lire l'article →
                 </button>
               </div>

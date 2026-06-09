@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/Layout";
-import { LogOut, Users, FileText, BookOpen, Video, Radio, Trash2, Plus, Mail, Phone, MapPin } from "lucide-react";
+import { LogOut, Users, FileText, BookOpen, Video, Radio, Trash2, Plus, Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Tab = "registrations" | "articles" | "books" | "videos" | "podcasts";
+type Tab = "registrations" | "feedback" | "articles" | "books" | "videos" | "podcasts";
 
 function AdminPage() {
   const [tab, setTab] = useState<Tab>("registrations");
@@ -23,6 +23,7 @@ function AdminPage() {
 
   const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
     { id: "registrations", label: "Inscriptions", icon: Users },
+    { id: "feedback", label: "Retours lecteurs", icon: MessageCircle },
     { id: "articles", label: "Articles", icon: FileText },
     { id: "books", label: "Livres", icon: BookOpen },
     { id: "videos", label: "Vidéos", icon: Video },
@@ -57,6 +58,7 @@ function AdminPage() {
         </div>
 
         {tab === "registrations" && <Registrations />}
+        {tab === "feedback" && <ReaderFeedbackList />}
         {tab === "articles" && <ContentTable table="articles" fields={[{ name: "title", label: "Titre" }, { name: "category", label: "Catégorie" }, { name: "excerpt", label: "Extrait", textarea: true }, { name: "cover_url", label: "URL image" }]} />}
         {tab === "books" && <ContentTable table="books" fields={[{ name: "title", label: "Titre" }, { name: "author", label: "Auteur" }, { name: "chapters", label: "Chapitres", type: "number" }, { name: "cover_url", label: "URL couverture" }]} />}
         {tab === "videos" && <ContentTable table="videos" fields={[{ name: "title", label: "Titre" }, { name: "youtube_id", label: "ID YouTube" }, { name: "duration", label: "Durée" }]} />}
@@ -231,6 +233,67 @@ function ContentTable({ table, fields }: { table: "articles" | "books" | "videos
           </div>
         </form>
       </aside>
+    </div>
+  );
+}
+
+function ReaderFeedbackList() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await (supabase as any)
+      .from("reader_feedback")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) toast.error(error.message);
+    else setRows(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ce message ?")) return;
+    const { error } = await (supabase as any).from("reader_feedback").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Supprimé"); load(); }
+  };
+
+  return (
+    <div>
+      <p className="mb-3 text-sm text-muted-foreground">{rows.length} message(s) — résumés et questions envoyés depuis la Bibliothèque.</p>
+      {loading ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">Chargement…</p>
+      ) : rows.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">Aucun message pour le moment.</p>
+      ) : (
+        <div className="grid gap-3 md:grid-cols-2">
+          {rows.map((r) => (
+            <article key={r.id} className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${r.kind === "summary" ? "bg-flame/15 text-flame" : "bg-primary/15 text-primary"}`}>
+                    {r.kind === "summary" ? "Résumé" : "Question"}
+                  </span>
+                  <p className="mt-1 text-sm font-semibold text-foreground">{r.book_title}</p>
+                </div>
+                <button onClick={() => remove(r.id)} className="text-muted-foreground hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="mt-2 whitespace-pre-line text-sm text-foreground/90">{r.message}</p>
+              <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+                {(r.user_name || r.user_email) && (
+                  <p>De : {r.user_name || "Anonyme"}{r.user_email ? ` • ${r.user_email}` : ""}</p>
+                )}
+                <p className="text-[10px]">{new Date(r.created_at).toLocaleString("fr-FR")}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
