@@ -4,7 +4,9 @@ import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { BOOKS } from "@/lib/content";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Download, Pause, Volume2, BookOpen, Quote, Library, ChevronDown, Send, MessageCircle, CheckCircle2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/bibliotheque")({
   head: () => ({
@@ -106,11 +108,32 @@ function BibliothequePage() {
   const [chapter, setChapter] = useState(1);
   const [speaking, setSpeaking] = useState(false);
   const [openKw, setOpenKw] = useState<Record<string, boolean>>({});
+  const [progress, setProgress] = useState<Record<string, number>>({});
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  // Charger la position de lecture sauvegardée
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    try { setProgress(JSON.parse(localStorage.getItem("mcsf_book_progress") ?? "{}")); } catch {}
     return () => { if (typeof window !== "undefined") window.speechSynthesis?.cancel(); };
   }, []);
+
+  // Sauvegarder à chaque changement de chapitre
+  useEffect(() => {
+    if (!openBook || typeof window === "undefined") return;
+    setProgress((p) => {
+      const next = { ...p, [openBook.id]: chapter };
+      try { localStorage.setItem("mcsf_book_progress", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, [openBook, chapter]);
+
+  const openBookAt = (b: (typeof BOOKS)[number]) => {
+    const saved = progress[b.id] ?? 1;
+    setOpenBook(b);
+    setChapter(Math.min(Math.max(1, saved), b.chapters));
+  };
 
   const stopSpeak = () => { window.speechSynthesis?.cancel(); setSpeaking(false); };
 
@@ -170,10 +193,10 @@ function BibliothequePage() {
                 <p className="mt-1 text-[11px] text-muted-foreground line-clamp-1">{b.author}</p>
                 <div className="mt-auto flex gap-1 pt-3">
                   <button
-                    onClick={() => { setOpenBook(b); setChapter(1); }}
+                    onClick={() => openBookAt(b)}
                     className="inline-flex flex-1 items-center justify-center gap-1 rounded-none bg-flame px-2 py-1.5 text-[11px] font-semibold text-flame-foreground hover:opacity-90"
                   >
-                    <BookOpen className="h-3 w-3" /> Lire
+                    <BookOpen className="h-3 w-3" /> {progress[b.id] && progress[b.id] > 1 ? `Reprendre ch.${progress[b.id]}` : "Lire"}
                   </button>
                   <button
                     onClick={() => { setOpenBook(b); setTimeout(downloadPDF, 50); }}
@@ -192,7 +215,7 @@ function BibliothequePage() {
       {openBook && (
         <div
           className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/85 md:items-center md:p-4"
-          onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }}
+          onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); setFeedbackOpen(false); }}
         >
           <div
             className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl"
@@ -203,7 +226,7 @@ function BibliothequePage() {
                 <img src={openBook.cover} alt="" className="h-12 w-12 rounded object-cover" />
                 <div className="min-w-0">
                   <h3 className="truncate font-display text-base font-semibold text-foreground md:text-lg">{openBook.title}</h3>
-                  <p className="text-xs text-muted-foreground">Chapitre {chapter} / {openBook.chapters}</p>
+                  <p className="text-xs text-muted-foreground">Chapitre {chapter} / {openBook.chapters} • Lecture sauvegardée</p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
@@ -214,7 +237,7 @@ function BibliothequePage() {
                 <button onClick={downloadPDF} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-semibold hover:bg-accent">
                   <Download className="h-3.5 w-3.5" /><span className="hidden sm:inline">PDF</span>
                 </button>
-                <button onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
+                <button onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); setFeedbackOpen(false); }} className="rounded-full p-2 hover:bg-accent"><X className="h-5 w-5" /></button>
               </div>
             </div>
 
