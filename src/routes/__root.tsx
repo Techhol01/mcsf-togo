@@ -10,6 +10,8 @@ import {
 import { LanguageProvider } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
+import { useEffect } from "react";
+import { registerPWA } from "@/lib/pwa";
 
 function NotFoundComponent() {
   return (
@@ -119,6 +121,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    registerPWA();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
