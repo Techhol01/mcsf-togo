@@ -10,6 +10,8 @@ import {
 import { LanguageProvider } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
+import { useEffect } from "react";
+import { registerPWA } from "@/lib/pwa";
 
 function NotFoundComponent() {
   return (
