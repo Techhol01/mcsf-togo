@@ -122,7 +122,7 @@ export function ModernHeader() {
       </div>
 
       {/* Tablet horizontal nav */}
-      <div className="hidden border-t border-border bg-background/60 md:block lg:hidden">
+      <div className="hidden border-t border-border bg-background md:block lg:hidden">
         <div className="container-page flex items-center gap-1 overflow-x-auto py-2">
           {NAV_ITEMS.map((it) => (
             <Link
