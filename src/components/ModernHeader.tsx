@@ -63,9 +63,9 @@ export function ModernHeader() {
           </div>
           <Link
             to="/don"
-            className="hidden items-center gap-1.5 rounded-full bg-gradient-flame px-4 py-2 text-sm font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex"
+            className="hidden items-center gap-1 rounded-full bg-gradient-flame px-3 py-1.5 text-xs font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex lg:text-[13px]"
           >
-            <HandHeart className="h-4 w-4" />
+            <HandHeart className="h-3.5 w-3.5" />
             <span>{t("cta.donate")}</span>
           </Link>
 
