@@ -11,7 +11,7 @@ export function ModernHeader() {
   const { t } = useI18n();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm">
       {/* ===== TOP STRIP (desktop only) — contact + langues + don ===== */}
       <div className="hidden border-b border-border/50 bg-primary text-primary-foreground lg:block">
         <div className="container-page flex h-9 items-center justify-between text-[11px]">
@@ -63,9 +63,9 @@ export function ModernHeader() {
           </div>
           <Link
             to="/don"
-            className="hidden items-center gap-1.5 rounded-full bg-gradient-flame px-4 py-2 text-sm font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex"
+            className="hidden items-center gap-1 rounded-full bg-gradient-flame px-3 py-1.5 text-xs font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex lg:text-[13px]"
           >
-            <HandHeart className="h-4 w-4" />
+            <HandHeart className="h-3.5 w-3.5" />
             <span>{t("cta.donate")}</span>
           </Link>
 
@@ -122,7 +122,7 @@ export function ModernHeader() {
       </div>
 
       {/* Tablet horizontal nav */}
-      <div className="hidden border-t border-border bg-background/60 md:block lg:hidden">
+      <div className="hidden border-t border-border bg-background md:block lg:hidden">
         <div className="container-page flex items-center gap-1 overflow-x-auto py-2">
           {NAV_ITEMS.map((it) => (
             <Link
