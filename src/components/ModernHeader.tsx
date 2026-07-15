@@ -11,7 +11,7 @@ export function ModernHeader() {
   const { t } = useI18n();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm">
       {/* ===== TOP STRIP (desktop only) — contact + langues + don ===== */}
       <div className="hidden border-b border-border/50 bg-primary text-primary-foreground lg:block">
         <div className="container-page flex h-9 items-center justify-between text-[11px]">
