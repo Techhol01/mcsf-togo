@@ -302,17 +302,23 @@ function ForumPage() {
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={`Écrire dans ${current.name}…`}
-                    className="flex-1 rounded-full border border-border bg-card px-4 py-2 text-sm focus:border-flame focus:outline-none"
+                    className="flex-1 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground focus:border-flame focus:outline-none"
                   />
-                  {draft.trim() ? (
-                    <button onClick={send} className="flex h-10 w-10 items-center justify-center rounded-full bg-flame text-flame-foreground hover:opacity-90" aria-label="Envoyer">
-                      <Send className="h-4 w-4" />
-                    </button>
-                  ) : (
-                    <button onClick={startRec} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90" aria-label="Message vocal">
-                      <Mic className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    onClick={startRec}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90"
+                    aria-label="Message vocal"
+                  >
+                    <Mic className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={send}
+                    disabled={!draft.trim()}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-flame text-flame-foreground shadow-flame hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Envoyer"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
                 </div>
               )}
             </div>
