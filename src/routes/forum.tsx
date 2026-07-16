@@ -186,7 +186,7 @@ function ForumPage() {
       </section>
 
       <section className="container-page py-4">
-        <div className="grid h-[calc(100vh-220px)] min-h-[520px] grid-cols-1 overflow-hidden rounded-none border border-border bg-card shadow-elegant md:grid-cols-[300px_1fr]">
+        <div className="grid h-[calc(100vh-260px)] min-h-[560px] grid-cols-1 overflow-hidden rounded-none border border-border bg-card shadow-elegant md:grid-cols-[300px_1fr]">
           {/* Sidebar groupes */}
           <aside className="hidden flex-col border-r border-border bg-background/50 md:flex">
             <div className="border-b border-border p-3">
