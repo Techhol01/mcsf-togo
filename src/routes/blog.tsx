@@ -23,39 +23,87 @@ function BlogPage() {
   const list = cat === "Tous" ? ARTICLES : ARTICLES.filter((a) => a.category === cat);
 
   if (active) {
+    const others = ARTICLES.filter((a) => a.id !== active.id).slice(0, 5);
+    const catCounts = CATEGORIES.filter((c) => c !== "Tous").map((c) => ({
+      name: c,
+      count: ARTICLES.filter((a) => a.category === c).length,
+    }));
     return (
       <Layout>
-        <article className="container-page max-w-3xl py-10">
-          <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            <ArrowLeft className="h-4 w-4" /> Retour aux articles
-          </button>
-          <div className="overflow-hidden rounded-none">
-            <img src={active.cover} alt={active.title} className="aspect-[16/9] w-full object-cover" />
-          </div>
-          <span className="mt-6 inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
-          <h1 className="mt-3 font-display text-3xl font-bold text-foreground md:text-4xl">{active.title}</h1>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><User className="h-4 w-4" /> {active.author}</span>
-            <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" /> {new Date(active.date).toLocaleDateString("fr-FR")}</span>
-          </div>
-          <div className="prose-mcsf mt-6 space-y-4 leading-relaxed text-foreground/90">
-            <p className="text-lg font-medium">{active.excerpt}</p>
-            <p>L'Écriture sainte nous invite à la vigilance et à la persévérance. Le Pasteur ADAM Aboudaminou,
-              à travers cet enseignement, nous rappelle que les temps que nous vivons appellent à un retour
-              sincère vers Dieu et à une marche fidèle dans la foi.</p>
-            <p>« Veillez donc, car vous ne savez pas quel jour votre Seigneur viendra » (Matthieu 24:42).
-              Cette parole résonne avec une acuité particulière à l'approche des événements eschatologiques
-              annoncés dans la Parole.</p>
-            <p>Que le Seigneur Jésus-Christ affermisse nos cœurs et nous garde irréprochables jusqu'à son
-              avènement glorieux. Amen.</p>
-          </div>
-          <button
-            onClick={() => navigator.share?.({ title: active.title, url: window.location.href }).catch(() => {})}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-flame px-5 py-2 text-sm font-semibold text-flame-foreground hover:opacity-90"
-          >
-            <Share2 className="h-4 w-4" /> Partager
-          </button>
-        </article>
+        <div className="container-page grid gap-8 py-10 lg:grid-cols-[280px_1fr]">
+          {/* Sidebar widgets */}
+          <aside className="order-2 space-y-6 lg:order-1">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">Catégories</h3>
+              <ul className="space-y-1.5">
+                {catCounts.map((c) => (
+                  <li key={c.name}>
+                    <button
+                      onClick={() => { setCat(c.name); setActive(null); }}
+                      className="flex w-full items-center justify-between rounded px-2 py-1.5 text-sm text-foreground/85 hover:bg-accent hover:text-foreground"
+                    >
+                      <span className="inline-flex items-center gap-2"><Tag className="h-3 w-3" /> {c.name}</span>
+                      <span className="rounded-full bg-flame/10 px-2 text-[11px] font-semibold text-flame">{c.count}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">Articles récents</h3>
+              <ul className="space-y-3">
+                {others.map((o) => (
+                  <li key={o.id}>
+                    <button onClick={() => setActive(o)} className="flex gap-3 text-left group">
+                      <img src={o.cover} alt={o.title} className="h-14 w-16 shrink-0 rounded object-cover" loading="lazy" />
+                      <span className="min-w-0">
+                        <span className="line-clamp-2 text-xs font-semibold text-foreground group-hover:text-primary">{o.title}</span>
+                        <span className="mt-1 block text-[10px] text-muted-foreground">{new Date(o.date).toLocaleDateString("fr-FR")}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-lg border border-border bg-gradient-to-br from-primary to-flame p-4 text-primary-foreground shadow-elegant">
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider">Soutenir MCSF</h3>
+              <p className="mt-2 text-xs opacity-90">Participez à l'œuvre du Seigneur par vos dons.</p>
+              <a href="/don" className="mt-3 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-bold text-flame hover:opacity-90">Faire un don</a>
+            </div>
+          </aside>
+
+          <article className="order-1 max-w-3xl lg:order-2">
+            <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+              <ArrowLeft className="h-4 w-4" /> Retour aux articles
+            </button>
+            <div className="overflow-hidden rounded-none">
+              <img src={active.cover} alt={active.title} className="aspect-[16/9] w-full object-cover" />
+            </div>
+            <span className="mt-6 inline-block rounded-full bg-flame/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-flame">{active.category}</span>
+            <h1 className="mt-3 font-display text-3xl font-bold text-foreground md:text-4xl">{active.title}</h1>
+            <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1"><User className="h-4 w-4" /> {active.author}</span>
+              <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" /> {new Date(active.date).toLocaleDateString("fr-FR")}</span>
+            </div>
+            <div className="prose-mcsf mt-6 space-y-4 leading-relaxed text-foreground/90">
+              <p className="text-lg font-medium">{active.excerpt}</p>
+              <p>L'Écriture sainte nous invite à la vigilance et à la persévérance. Le Pasteur ADAM Aboudaminou,
+                à travers cet enseignement, nous rappelle que les temps que nous vivons appellent à un retour
+                sincère vers Dieu et à une marche fidèle dans la foi.</p>
+              <p>« Veillez donc, car vous ne savez pas quel jour votre Seigneur viendra » (Matthieu 24:42).
+                Cette parole résonne avec une acuité particulière à l'approche des événements eschatologiques
+                annoncés dans la Parole.</p>
+              <p>Que le Seigneur Jésus-Christ affermisse nos cœurs et nous garde irréprochables jusqu'à son
+                avènement glorieux. Amen.</p>
+            </div>
+            <button
+              onClick={() => navigator.share?.({ title: active.title, url: window.location.href }).catch(() => {})}
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-flame px-5 py-2 text-sm font-semibold text-flame-foreground hover:opacity-90"
+            >
+              <Share2 className="h-4 w-4" /> Partager
+            </button>
+          </article>
+        </div>
       </Layout>
     );
   }
