@@ -186,7 +186,7 @@ function ForumPage() {
       </section>
 
       <section className="container-page py-4">
-        <div className="grid h-[calc(100vh-220px)] min-h-[520px] grid-cols-1 overflow-hidden rounded-none border border-border bg-card shadow-elegant md:grid-cols-[300px_1fr]">
+        <div className="grid h-[calc(100vh-260px)] min-h-[560px] grid-cols-1 overflow-hidden rounded-none border border-border bg-card shadow-elegant md:grid-cols-[300px_1fr]">
           {/* Sidebar groupes */}
           <aside className="hidden flex-col border-r border-border bg-background/50 md:flex">
             <div className="border-b border-border p-3">
@@ -228,17 +228,20 @@ function ForumPage() {
 
           {/* Chat */}
           <div className="flex flex-col">
-            {/* Sélecteur mobile */}
-            <div className="border-b border-border bg-background/50 p-2 md:hidden">
-              <select
-                value={activeGroup}
-                onChange={(e) => setActiveGroup(e.target.value)}
-                className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm"
-              >
+            {/* Sélecteur mobile — chips thématiques */}
+            <div className="border-b border-border bg-background/60 p-2 md:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-1">
                 {GROUPS.map((g) => (
-                  <option key={g.id} value={g.id}>{g.emoji} {g.name}</option>
+                  <button
+                    key={g.id}
+                    onClick={() => setActiveGroup(g.id)}
+                    className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${activeGroup === g.id ? "border-flame bg-flame text-flame-foreground shadow-flame" : "border-border bg-card text-foreground hover:bg-accent"}`}
+                    title={g.topic}
+                  >
+                    <span className="mr-1">{g.emoji}</span>{g.name}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* En-tête groupe */}
@@ -299,17 +302,23 @@ function ForumPage() {
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={`Écrire dans ${current.name}…`}
-                    className="flex-1 rounded-full border border-border bg-card px-4 py-2 text-sm focus:border-flame focus:outline-none"
+                    className="flex-1 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground focus:border-flame focus:outline-none"
                   />
-                  {draft.trim() ? (
-                    <button onClick={send} className="flex h-10 w-10 items-center justify-center rounded-full bg-flame text-flame-foreground hover:opacity-90" aria-label="Envoyer">
-                      <Send className="h-4 w-4" />
-                    </button>
-                  ) : (
-                    <button onClick={startRec} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90" aria-label="Message vocal">
-                      <Mic className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    onClick={startRec}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90"
+                    aria-label="Message vocal"
+                  >
+                    <Mic className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={send}
+                    disabled={!draft.trim()}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-flame text-flame-foreground shadow-flame hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Envoyer"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
                 </div>
               )}
             </div>
