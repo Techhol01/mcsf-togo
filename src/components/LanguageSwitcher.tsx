@@ -13,13 +13,13 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-xs font-semibold text-foreground shadow-soft hover:bg-accent"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white shadow-soft backdrop-blur-sm hover:bg-white/25"
         aria-label="Changer la langue"
       >
-        <Globe className="h-3.5 w-3.5 text-primary" />
+        <Globe className="h-3.5 w-3.5" />
         <span className="text-sm leading-none">{current.flag}</span>
         <span className="font-bold tracking-wide">{current.native}</span>
-        {!compact && <ChevronDown className="h-3 w-3 opacity-60" />}
+        {!compact && <ChevronDown className="h-3 w-3 opacity-80" />}
       </button>
       {open && (
         <div className="absolute right-0 top-full z-[60] mt-1 w-48 overflow-hidden rounded-lg border border-border bg-popover shadow-elegant">
