@@ -14,7 +14,7 @@ export function ModernHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background shadow-sm">
       {/* ===== TOP STRIP (desktop only) — contact + langues + don ===== */}
       <div className="hidden border-b border-border/50 bg-primary text-primary-foreground lg:block">
-        <div className="container-page flex h-9 items-center justify-between text-[11px]">
+        <div className="container-page flex h-10 items-center justify-between text-[11px]">
           <div className="flex items-center gap-5">
             <span className="inline-flex items-center gap-1.5"><Phone className="h-3 w-3" /> +228 00 00 00 00</span>
             <span className="inline-flex items-center gap-1.5"><Mail className="h-3 w-3" /> contact@mcsf.org</span>
@@ -23,6 +23,13 @@ export function ModernHeader() {
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <Link to="/auth" className="text-primary-foreground/85 hover:text-flame">Mon compte</Link>
+            <Link
+              to="/don"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-flame px-3 py-1 text-[11px] font-bold text-flame-foreground shadow-flame transition hover:scale-[1.03]"
+            >
+              <HandHeart className="h-3.5 w-3.5" />
+              <span>{t("cta.donate")}</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -33,7 +40,7 @@ export function ModernHeader() {
           <img src={logo} alt="MCSF" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
           <div className="leading-tight min-w-0">
             <div className="font-display text-lg font-bold text-primary">MCSF</div>
-            <div className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="whitespace-nowrap text-[10px] uppercase tracking-wider text-muted-foreground">
               Mission Christ Sans Frontière
             </div>
           </div>
@@ -61,11 +68,12 @@ export function ModernHeader() {
           <div className="hidden md:block">
             <GlobalSearch />
           </div>
+          {/* Donate on tablet only (desktop shows it in top strip) */}
           <Link
             to="/don"
-            className="hidden items-center gap-1 rounded-full bg-gradient-flame px-2.5 py-1 text-[11px] font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex lg:text-[12px]"
+            className="hidden items-center gap-1.5 rounded-full bg-gradient-flame px-3 py-1.5 text-[12px] font-semibold text-flame-foreground shadow-flame transition hover:scale-[1.03] sm:inline-flex lg:hidden"
           >
-            <HandHeart className="h-3 w-3" />
+            <HandHeart className="h-3.5 w-3.5" />
             <span>{t("cta.donate")}</span>
           </Link>
 
