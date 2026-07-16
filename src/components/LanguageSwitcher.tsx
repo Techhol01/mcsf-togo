@@ -22,7 +22,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         {!compact && <ChevronDown className="h-3 w-3 opacity-80" />}
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-[60] mt-1 w-48 overflow-hidden rounded-lg border border-border bg-popover shadow-elegant">
+        <div className="absolute right-0 top-full z-[60] mt-1 w-52 overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-elegant">
           {LANGUAGES.map((l) => (
             <button
               key={l.code}
@@ -31,7 +31,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                 setLang(l.code);
                 setOpen(false);
               }}
-              className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-xs hover:bg-accent ${l.code === lang ? "bg-accent/60 font-semibold" : ""}`}
+              className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-xs text-popover-foreground hover:bg-accent hover:text-accent-foreground ${l.code === lang ? "bg-accent/60 font-semibold" : ""}`}
             >
               <span className="flex items-center gap-2">
                 <span className="text-base leading-none">{l.flag}</span>
