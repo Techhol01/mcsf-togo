@@ -65,12 +65,47 @@ function BlogPage() {
                 ))}
               </ul>
             </div>
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">À propos de l'auteur</h3>
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-flame/15 text-sm font-bold text-flame">PA</div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Pasteur ADAM Aboudaminou</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Fondateur de la MCSF, enseignant de la Parole et missionnaire au service du Royaume.</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">Mots-clés</h3>
+              <div className="flex flex-wrap gap-2">
+                {["Prophétie", "Croix", "Réveil", "Prière", "Espérance", "Retour de Christ", "Repentance", "Sainteté"].map((t) => (
+                  <span key={t} className="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-semibold text-foreground/80 hover:border-flame hover:text-flame">#{t}</span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">Newsletter</h3>
+              <p className="text-xs text-muted-foreground">Recevez chaque semaine les nouveaux articles.</p>
+              <form onSubmit={(e) => { e.preventDefault(); }} className="mt-2 flex gap-1">
+                <input type="email" required placeholder="Votre email" className="flex-1 rounded-none border border-border bg-background px-2 py-1.5 text-xs outline-none focus:border-flame" />
+                <button className="rounded-none bg-flame px-3 py-1.5 text-xs font-bold text-flame-foreground hover:opacity-90">OK</button>
+              </form>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 shadow-soft">
+              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-flame">Suivre MCSF</h3>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <a href="#" className="rounded-full border border-border px-3 py-1.5 font-semibold hover:border-flame hover:text-flame">Facebook</a>
+                <a href="#" className="rounded-full border border-border px-3 py-1.5 font-semibold hover:border-flame hover:text-flame">YouTube</a>
+                <a href="#" className="rounded-full border border-border px-3 py-1.5 font-semibold hover:border-flame hover:text-flame">WhatsApp</a>
+              </div>
+            </div>
             <div className="rounded-lg border border-border bg-gradient-to-br from-primary to-flame p-4 text-primary-foreground shadow-elegant">
               <h3 className="font-display text-sm font-bold uppercase tracking-wider">Soutenir MCSF</h3>
               <p className="mt-2 text-xs opacity-90">Participez à l'œuvre du Seigneur par vos dons.</p>
               <a href="/don" className="mt-3 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-bold text-flame hover:opacity-90">Faire un don</a>
             </div>
           </aside>
+
 
           <article className="order-1 max-w-3xl lg:order-2">
             <button onClick={() => setActive(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
