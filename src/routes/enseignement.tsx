@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { PageBanner } from "@/components/PageBanner";
 import { VIDEOS } from "@/lib/content";
 import { Play, Share2, ThumbsUp, Video as VideoIcon, Check } from "lucide-react";
+import { VideoComments } from "@/components/VideoComments";
 
 export const Route = createFileRoute("/enseignement")({
   head: () => ({
@@ -104,7 +105,9 @@ function EnseignementPage() {
               </div>
             </div>
           </div>
+          <VideoComments videoId={active.id} />
         </div>
+
 
         <aside>
           <h3 className="mb-3 font-display text-lg font-semibold text-foreground">Vidéos similaires</h3>

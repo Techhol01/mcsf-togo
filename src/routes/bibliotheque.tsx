@@ -218,7 +218,7 @@ function BibliothequePage() {
           onClick={() => { stopSpeak(); setOpenBook(null); setOpenKw({}); setFeedbackOpen(false); }}
         >
           <div
-            className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[92vh] md:max-h-[92vh] md:max-w-4xl md:rounded-2xl"
+            className="relative flex h-full w-full flex-col bg-card shadow-elegant md:h-[94vh] md:max-h-[94vh] md:max-w-6xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-3 border-b border-border p-3 md:p-4">
