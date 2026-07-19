@@ -105,7 +105,9 @@ function EnseignementPage() {
               </div>
             </div>
           </div>
+          <VideoComments videoId={active.id} />
         </div>
+
 
         <aside>
           <h3 className="mb-3 font-display text-lg font-semibold text-foreground">Vidéos similaires</h3>
