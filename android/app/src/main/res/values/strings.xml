@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MCSF</string>
+    <string name="title_activity_main">MCSF</string>
+    <string name="package_name">app.mcsf.togo</string>
+    <string name="custom_url_scheme">app.mcsf.togo</string>
+</resources>

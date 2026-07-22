@@ -1,0 +1,14 @@
+{
+  "appId": "app.mcsf.togo",
+  "appName": "MCSF",
+  "webDir": "www",
+  "server": {
+    "url": "https://mcsf-togo.lovable.app",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0b2540"
+  }
+}
