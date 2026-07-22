@@ -1,0 +1,73 @@
+name: Android Build (APK + AAB)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          [ -f www/index.html ] || echo '<!doctype html><meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/">' > www/index.html
+          npx cap sync android
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Decode keystore (if provided)
+        id: keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/release.keystore
+            echo "signed=true" >> $GITHUB_OUTPUT
+          else
+            echo "signed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build (signed release)
+        if: steps.keystore.outputs.signed == 'true'
+        working-directory: android
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease bundleRelease \
+            -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
+            -Pandroid.injected.signing.store.password=$KS_PASS \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASS
+
+      - name: Build (debug APK — no keystore)
+        if: steps.keystore.outputs.signed != 'true'
+        working-directory: android
+        run: ./gradlew assembleDebug bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mcsf-android
+          path: |
+            android/app/build/outputs/apk/**/*.apk
+            android/app/build/outputs/bundle/**/*.aab
+          if-no-files-found: warn
