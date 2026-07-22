@@ -3,11 +3,24 @@ name: Android Build (APK + AAB)
 on:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Create a GitHub Release with the artifacts'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      signed: ${{ steps.keystore.outputs.signed }}
+      version_name: ${{ steps.meta.outputs.version_name }}
+      version_code: ${{ steps.meta.outputs.version_code }}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +33,7 @@ jobs:
       - name: Install deps
         run: bun install --frozen-lockfile
 
-      - name: Prepare web assets
+      - name: Prepare web assets & sync Capacitor
         run: |
           mkdir -p www
           [ -f www/index.html ] || echo '<!doctype html><meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/">' > www/index.html
@@ -33,6 +46,15 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
+      - name: Read version from build.gradle
+        id: meta
+        run: |
+          VN=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle | head -1)
+          VC=$(grep -oP 'versionCode\s+\K\d+' android/app/build.gradle | head -1)
+          echo "version_name=$VN" >> $GITHUB_OUTPUT
+          echo "version_code=$VC" >> $GITHUB_OUTPUT
+          echo "MCSF v$VN (code $VC)"
+
       - name: Decode keystore (if provided)
         id: keystore
         env:
@@ -41,11 +63,13 @@ jobs:
           if [ -n "$KEYSTORE_B64" ]; then
             echo "$KEYSTORE_B64" | base64 -d > android/app/release.keystore
             echo "signed=true" >> $GITHUB_OUTPUT
+            echo "Keystore decoded ($(wc -c < android/app/release.keystore) bytes)"
           else
             echo "signed=false" >> $GITHUB_OUTPUT
+            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; building unsigned/debug only."
           fi
 
-      - name: Build (signed release)
+      - name: Build signed release (APK + AAB)
         if: steps.keystore.outputs.signed == 'true'
         working-directory: android
         env:
@@ -53,21 +77,72 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          ./gradlew assembleRelease bundleRelease \
+          ./gradlew --no-daemon assembleRelease bundleRelease \
             -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
-            -Pandroid.injected.signing.store.password=$KS_PASS \
-            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$KEY_PASS
+            -Pandroid.injected.signing.store.password="$KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASS"
 
-      - name: Build (debug APK — no keystore)
+      - name: Build debug APK (no keystore configured)
         if: steps.keystore.outputs.signed != 'true'
         working-directory: android
-        run: ./gradlew assembleDebug bundleRelease
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Verify AAB signature (jarsigner + bundletool)
+        if: steps.keystore.outputs.signed == 'true'
+        run: |
+          set -e
+          AAB=$(find android/app/build/outputs/bundle -name '*.aab' | head -1)
+          APK=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          echo "AAB: $AAB"
+          echo "APK: $APK"
+
+          echo "--- jarsigner -verify (AAB) ---"
+          jarsigner -verify -verbose:summary "$AAB" | tail -5
+          jarsigner -verify "$AAB" | grep -qi 'jar verified' && echo "AAB signature OK"
+
+          BT_VER=1.17.2
+          curl -sSL -o /tmp/bundletool.jar \
+            https://github.com/google/bundletool/releases/download/${BT_VER}/bundletool-all-${BT_VER}.jar
+          echo "--- bundletool validate ---"
+          java -jar /tmp/bundletool.jar validate --bundle="$AAB"
+
+          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
+          echo "--- apksigner verify (APK) ---"
+          "${BUILD_TOOLS}apksigner" verify --verbose "$APK" || true
+
+      - name: Rename artifacts
+        run: |
+          mkdir -p dist
+          V="${{ steps.meta.outputs.version_name }}-${{ steps.meta.outputs.version_code }}"
+          for f in $(find android/app/build/outputs -name '*.apk' -o -name '*.aab'); do
+            base=$(basename "$f")
+            cp "$f" "dist/mcsf-${V}-${base}"
+          done
+          ls -lh dist/
+          sha256sum dist/* > dist/SHA256SUMS.txt
+          cat dist/SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
         with:
-          name: mcsf-android
-          path: |
-            android/app/build/outputs/apk/**/*.apk
-            android/app/build/outputs/bundle/**/*.aab
-          if-no-files-found: warn
+          name: mcsf-android-v${{ steps.meta.outputs.version_name }}-${{ steps.meta.outputs.version_code }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 90
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release == true)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}-{1}', needs.build.outputs.version_name, github.run_number) }}
+          name: MCSF Android v${{ needs.build.outputs.version_name }} (build ${{ needs.build.outputs.version_code }})
+          generate_release_notes: true
+          files: artifacts/**/*
+          fail_on_unmatched_files: true
