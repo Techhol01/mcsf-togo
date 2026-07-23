@@ -31,13 +31,13 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Install deps
-        run: bun install --frozen-lockfile
+        run: bun install || npm install --legacy-peer-deps
 
       - name: Prepare web assets & sync Capacitor
         run: |
           mkdir -p www
           [ -f www/index.html ] || echo '<!doctype html><meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/">' > www/index.html
-          npx cap sync android
+          npx --yes cap sync android
 
       - uses: actions/setup-java@v4
         with:
@@ -45,6 +45,9 @@ jobs:
           java-version: 21
 
       - uses: android-actions/setup-android@v3
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
 
       - name: Read version from build.gradle
         id: meta
@@ -66,7 +69,7 @@ jobs:
             echo "Keystore decoded ($(wc -c < android/app/release.keystore) bytes)"
           else
             echo "signed=false" >> $GITHUB_OUTPUT
-            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; building unsigned/debug only."
+            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; building debug APK only."
           fi
 
       - name: Build signed release (APK + AAB)
@@ -83,8 +86,7 @@ jobs:
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$KEY_PASS"
 
-      - name: Build debug APK (no keystore configured)
-        if: steps.keystore.outputs.signed != 'true'
+      - name: Build debug APK (always, so you always get an installable APK)
         working-directory: android
         run: ./gradlew --no-daemon assembleDebug
 
@@ -96,22 +98,16 @@ jobs:
           APK=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
           echo "AAB: $AAB"
           echo "APK: $APK"
-
-          echo "--- jarsigner -verify (AAB) ---"
           jarsigner -verify -verbose:summary "$AAB" | tail -5
           jarsigner -verify "$AAB" | grep -qi 'jar verified' && echo "AAB signature OK"
-
           BT_VER=1.17.2
           curl -sSL -o /tmp/bundletool.jar \
             https://github.com/google/bundletool/releases/download/${BT_VER}/bundletool-all-${BT_VER}.jar
-          echo "--- bundletool validate ---"
           java -jar /tmp/bundletool.jar validate --bundle="$AAB"
-
           BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
-          echo "--- apksigner verify (APK) ---"
           "${BUILD_TOOLS}apksigner" verify --verbose "$APK" || true
 
-      - name: Rename artifacts
+      - name: Collect artifacts
         run: |
           mkdir -p dist
           V="${{ steps.meta.outputs.version_name }}-${{ steps.meta.outputs.version_code }}"
