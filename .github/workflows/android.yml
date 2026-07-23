@@ -14,6 +14,11 @@ on:
 permissions:
   contents: write
 
+env:
+  APP_SLUG: mcsf
+  ANDROID_API_LEVEL: '36'
+  ANDROID_BUILD_TOOLS: '36.0.0'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,18 +31,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - uses: oven-sh/setup-bun@v2
-
-      - name: Install deps
-        run: bun install || npm install --legacy-peer-deps
-
-      - name: Prepare web assets & sync Capacitor
-        run: |
-          mkdir -p www
-          [ -f www/index.html ] || echo '<!doctype html><meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/">' > www/index.html
-          npx --yes cap sync android
 
       - uses: actions/setup-java@v4
         with:
@@ -46,34 +42,77 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
+      - name: Install Android SDK packages
+        run: |
+          set -euxo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-${ANDROID_API_LEVEL}" \
+            "build-tools;${ANDROID_BUILD_TOOLS}"
+
+      - name: Install web dependencies
+        run: |
+          set -euxo pipefail
+          bun install --no-frozen-lockfile || npm install --legacy-peer-deps --no-audit --no-fund
+
       - name: Make gradlew executable
         run: chmod +x android/gradlew
+
+      - name: Prepare web assets & sync Capacitor
+        run: |
+          set -euxo pipefail
+          mkdir -p www
+          cat > www/index.html <<'HTML'
+          <!doctype html>
+          <html lang="fr">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/" />
+              <title>MCSF</title>
+            </head>
+            <body>MCSF</body>
+          </html>
+          HTML
+          npx --yes cap sync android
 
       - name: Read version from build.gradle
         id: meta
         run: |
+          set -euo pipefail
           VN=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle | head -1)
           VC=$(grep -oP 'versionCode\s+\K\d+' android/app/build.gradle | head -1)
-          echo "version_name=$VN" >> $GITHUB_OUTPUT
-          echo "version_code=$VC" >> $GITHUB_OUTPUT
+          echo "version_name=$VN" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VC" >> "$GITHUB_OUTPUT"
           echo "MCSF v$VN (code $VC)"
 
       - name: Decode keystore (if provided)
         id: keystore
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > android/app/release.keystore
-            echo "signed=true" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASS" ] && printf '%s' "$KEYSTORE_B64" | tr -d '\r\n' | base64 -d > android/app/release.keystore; then
+            echo "signed=true" >> "$GITHUB_OUTPUT"
             echo "Keystore decoded ($(wc -c < android/app/release.keystore) bytes)"
           else
-            echo "signed=false" >> $GITHUB_OUTPUT
-            echo "::warning::No ANDROID_KEYSTORE_BASE64 secret; building debug APK only."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            rm -f android/app/release.keystore
+            echo "::warning::Keystore signing secrets are incomplete or invalid. The workflow will still build an installable debug APK and an unsigned release bundle when possible."
           fi
 
-      - name: Build signed release (APK + AAB)
+      - name: Build debug APK (always creates an installable APK)
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug --stacktrace
+
+      - name: Build signed release APK + AAB
+        id: signed_build
         if: steps.keystore.outputs.signed == 'true'
+        continue-on-error: true
         working-directory: android
         env:
           KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -81,17 +120,19 @@ jobs:
           KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           ./gradlew --no-daemon assembleRelease bundleRelease \
-            -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
+            -Pandroid.injected.signing.store.file="$PWD/app/release.keystore" \
             -Pandroid.injected.signing.store.password="$KS_PASS" \
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$KEY_PASS"
 
-      - name: Build debug APK (always, so you always get an installable APK)
+      - name: Build unsigned release AAB fallback
+        if: steps.keystore.outputs.signed != 'true' || steps.signed_build.outcome == 'failure'
+        continue-on-error: true
         working-directory: android
-        run: ./gradlew --no-daemon assembleDebug
+        run: ./gradlew --no-daemon bundleRelease assembleRelease --stacktrace
 
       - name: Verify AAB signature (jarsigner + bundletool)
-        if: steps.keystore.outputs.signed == 'true'
+        if: steps.keystore.outputs.signed == 'true' && steps.signed_build.outcome == 'success'
         run: |
           set -e
           AAB=$(find android/app/build/outputs/bundle -name '*.aab' | head -1)
@@ -104,22 +145,53 @@ jobs:
           curl -sSL -o /tmp/bundletool.jar \
             https://github.com/google/bundletool/releases/download/${BT_VER}/bundletool-all-${BT_VER}.jar
           java -jar /tmp/bundletool.jar validate --bundle="$AAB"
-          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)/
           "${BUILD_TOOLS}apksigner" verify --verbose "$APK" || true
 
       - name: Collect artifacts
+        if: always()
         run: |
-          mkdir -p dist
+          set -euo pipefail
+          mkdir -p dist/APK dist/AAB
           V="${{ steps.meta.outputs.version_name }}-${{ steps.meta.outputs.version_code }}"
-          for f in $(find android/app/build/outputs -name '*.apk' -o -name '*.aab'); do
+          APK_COUNT=0
+          AAB_COUNT=0
+          while IFS= read -r f; do
             base=$(basename "$f")
-            cp "$f" "dist/mcsf-${V}-${base}"
-          done
-          ls -lh dist/
-          sha256sum dist/* > dist/SHA256SUMS.txt
-          cat dist/SHA256SUMS.txt
+            cp "$f" "dist/APK/${APP_SLUG}-${V}-${base}"
+            APK_COUNT=$((APK_COUNT + 1))
+          done < <(find android/app/build/outputs -type f -name '*.apk' | sort)
+          while IFS= read -r f; do
+            base=$(basename "$f")
+            cp "$f" "dist/AAB/${APP_SLUG}-${V}-${base}"
+            AAB_COUNT=$((AAB_COUNT + 1))
+          done < <(find android/app/build/outputs -type f -name '*.aab' | sort)
+          {
+            echo "Android build artifacts"
+            echo "======================="
+            echo "APK files: $APK_COUNT"
+            echo "AAB files: $AAB_COUNT"
+            echo "Signing enabled: ${{ steps.keystore.outputs.signed }}"
+            echo "Signed release build: ${{ steps.signed_build.outcome || 'skipped' }}"
+          } > dist/BUILD_STATUS.txt
+          if [ "$APK_COUNT" -eq 0 ]; then
+            echo "::error::No APK was generated. Check the Gradle log above."
+            exit 1
+          fi
+          find dist -type f \( -name '*.apk' -o -name '*.aab' \) -print0 | xargs -0 sha256sum > dist/SHA256SUMS.txt
+          find dist -maxdepth 3 -type f -print | sort
+          cat dist/BUILD_STATUS.txt
+          {
+            echo "### Android artifacts"
+            echo "- APK files: $APK_COUNT"
+            echo "- AAB files: $AAB_COUNT"
+            echo "- Signing enabled: ${{ steps.keystore.outputs.signed }}"
+            echo ""
+            echo "Download the artifact named **mcsf-android-v${V}** below this workflow run. The APK files are inside the **APK/** folder."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: mcsf-android-v${{ steps.meta.outputs.version_name }}-${{ steps.meta.outputs.version_code }}
           path: dist/
