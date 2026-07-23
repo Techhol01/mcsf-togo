@@ -1,6 +1,6 @@
 # MCSF Android — Build & Play Store Guide
 
-Ton app est déjà wrappée avec **Capacitor** (`appId: app.mcsf.togo`). Le projet Android natif vit dans `android/` et charge la PWA publiée (`https://mcsf-togo.lovable.app`). Le workflow GitHub Actions `.github/workflows/android.yml` produit automatiquement APK + AAB signés, vérifie les signatures, et publie une **GitHub Release** sur tag `v*`.
+Ton app est déjà wrappée avec **Capacitor** (`appId: app.mcsf.togo`). Le projet Android natif vit dans `android/` et charge la PWA publiée (`https://mcsf-togo.lovable.app`). Le workflow GitHub Actions `.github/workflows/android.yml` produit automatiquement un dossier **APK/** téléchargeable à chaque push. Si les secrets de signature sont présents, il produit aussi l'APK release + l'AAB signé pour Play Console.
 
 ---
 
@@ -46,14 +46,28 @@ Trois façons :
   ```
 
 Le job `build` :
-1. Installe deps + sync Capacitor.
-2. Décode le keystore.
-3. Compile `assembleRelease` + `bundleRelease`.
-4. **Vérifie les signatures** avec `jarsigner`, `apksigner`, et **valide l'AAB avec `bundletool validate`**.
-5. Renomme les artifacts (`mcsf-1.0.0-1-app-release.aab`) et calcule les `SHA256SUMS`.
-6. Upload en artifact (rétention 90 j).
+1. Installe Java 21 + Android SDK + dépendances web.
+2. Génère les assets `www/` et synchronise Capacitor.
+3. Compile **toujours** `assembleDebug` pour créer un APK installable même sans keystore.
+4. Si les secrets `ANDROID_*` sont configurés, compile `assembleRelease` + `bundleRelease` signés.
+5. Si la signature manque ou échoue, tente quand même de créer un AAB release non signé en fallback.
+6. Crée un artifact GitHub contenant :
+   - `APK/` → les fichiers `.apk` installables.
+   - `AAB/` → les fichiers `.aab` quand disponibles.
+   - `BUILD_STATUS.txt` → résumé du build.
+   - `SHA256SUMS.txt` → empreintes de vérification.
 
-Le job `release` (sur tag `v*` ou dispatch avec `release=true`) publie une **GitHub Release** avec tous les fichiers.
+Le job `release` (sur tag `v*` ou dispatch avec `release=true`) publie une **GitHub Release** avec tous les fichiers générés.
+
+### Où récupérer le dossier APK ?
+
+1. Va dans GitHub → **Actions**.
+2. Ouvre le dernier workflow **Android Build (APK + AAB)**.
+3. En bas de la page, clique sur l'artifact **mcsf-android-v...**.
+4. Dézippe le fichier téléchargé.
+5. Ouvre le dossier **APK/** : tu y trouveras au minimum `app-debug.apk`, installable sur téléphone Android.
+
+> Important : un APK debug sert aux tests. Pour Play Store, il faut configurer les 4 secrets de signature afin d'obtenir l'AAB signé dans le dossier **AAB/**.
 
 ## 4. Incrémenter la version avant chaque release
 
@@ -143,4 +157,5 @@ adb install app-universal.apk
 | Play Console *"You uploaded an APK or Android App Bundle signed with a key that is also used to sign APKs delivered to users"* | Tu utilises une nouvelle clé alors que Play App Signing est déjà lié à l'ancienne. Réutilise la même keystore. |
 | Play Console *"Version code X has already been used"* | Bump `versionCode` dans `android/app/build.gradle`. |
 | `INSTALL_FAILED_UPDATE_INCOMPATIBLE` sur appareil test | L'appareil a déjà une version signée par une autre clé — désinstalle d'abord. |
-| Build vert mais AAB manquant | Vérifie que les 4 secrets `ANDROID_*` sont bien configurés — sans keystore, seul un APK debug est produit. |
+| Build vert mais AAB manquant | Vérifie que les 4 secrets `ANDROID_*` sont bien configurés — sans keystore valide, l'artifact contient surtout le dossier `APK/` avec l'APK debug. |
+| Croix rouge sur GitHub Actions | Ouvre le run → clique sur l'étape rouge. Le workflow corrigé installe maintenant explicitement Android SDK, rend `gradlew` exécutable, produit d'abord un APK debug, puis collecte les fichiers dans `dist/APK`. |
