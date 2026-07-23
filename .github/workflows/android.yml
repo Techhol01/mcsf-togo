@@ -83,8 +83,8 @@ jobs:
           set -euo pipefail
           VN=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle | head -1)
           VC=$(grep -oP 'versionCode\s+\K\d+' android/app/build.gradle | head -1)
-          echo "version_name=$VN" >> $GITHUB_OUTPUT
-          echo "version_code=$VC" >> $GITHUB_OUTPUT
+          echo "version_name=$VN" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VC" >> "$GITHUB_OUTPUT"
           echo "MCSF v$VN (code $VC)"
 
       - name: Decode keystore (if provided)
@@ -97,10 +97,10 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "$KEYSTORE_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASS" ] && printf '%s' "$KEYSTORE_B64" | tr -d '\r\n' | base64 -d > android/app/release.keystore; then
-            echo "signed=true" >> $GITHUB_OUTPUT
+            echo "signed=true" >> "$GITHUB_OUTPUT"
             echo "Keystore decoded ($(wc -c < android/app/release.keystore) bytes)"
           else
-            echo "signed=false" >> $GITHUB_OUTPUT
+            echo "signed=false" >> "$GITHUB_OUTPUT"
             rm -f android/app/release.keystore
             echo "::warning::Keystore signing secrets are incomplete or invalid. The workflow will still build an installable debug APK and an unsigned release bundle when possible."
           fi
@@ -120,7 +120,7 @@ jobs:
           KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           ./gradlew --no-daemon assembleRelease bundleRelease \
-            -Pandroid.injected.signing.store.file=$PWD/app/release.keystore \
+            -Pandroid.injected.signing.store.file="$PWD/app/release.keystore" \
             -Pandroid.injected.signing.store.password="$KS_PASS" \
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$KEY_PASS"
@@ -145,7 +145,7 @@ jobs:
           curl -sSL -o /tmp/bundletool.jar \
             https://github.com/google/bundletool/releases/download/${BT_VER}/bundletool-all-${BT_VER}.jar
           java -jar /tmp/bundletool.jar validate --bundle="$AAB"
-          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)/
           "${BUILD_TOOLS}apksigner" verify --verbose "$APK" || true
 
       - name: Collect artifacts
