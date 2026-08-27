@@ -59,22 +59,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Prepare web assets & sync Capacitor
+      - name: Build web app
         run: |
           set -euxo pipefail
-          mkdir -p www
-          cat > www/index.html <<'HTML'
-          <!doctype html>
-          <html lang="fr">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <meta http-equiv="refresh" content="0; url=https://mcsf-togo.lovable.app/" />
-              <title>MCSF</title>
-            </head>
-            <body>MCSF</body>
-          </html>
-          HTML
+          bun run build || npm run build
+
+      - name: Sync Capacitor with built app
+        run: |
+          set -euxo pipefail
           npx --yes cap sync android
 
       - name: Read version from build.gradle
