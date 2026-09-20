@@ -2,7 +2,7 @@ name: Android Build (APK + AAB)
 
 on:
   push:
-    branches: [main]
+    branches: [main, principal]
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -52,22 +52,13 @@ jobs:
             "build-tools;${ANDROID_BUILD_TOOLS}"
 
       - name: Install web dependencies
-        run: |
-          set -euxo pipefail
-          bun install --no-frozen-lockfile || npm install --legacy-peer-deps --no-audit --no-fund
+        run: bun install --frozen-lockfile
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Build web app
-        run: |
-          set -euxo pipefail
-          bun run build || npm run build
-
-      - name: Sync Capacitor with built app
-        run: |
-          set -euxo pipefail
-          npx --yes cap sync android
+      - name: Sync Capacitor Android
+        run: bunx cap sync android
 
       - name: Read version from build.gradle
         id: meta
@@ -99,7 +90,17 @@ jobs:
 
       - name: Build debug APK (always creates an installable APK)
         working-directory: android
-        run: ./gradlew --no-daemon assembleDebug --stacktrace
+        run: ./gradlew --no-daemon clean assembleDebug --stacktrace
+
+      - name: Verify installable APK and official icon
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/${ANDROID_BUILD_TOOLS}"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$APK"
+          unzip -l "$APK" | grep -q 'res/.*ic_launcher'
+          echo "APK installable and launcher icon packaged successfully."
 
       - name: Build signed release APK + AAB
         id: signed_build
