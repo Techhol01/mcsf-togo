@@ -99,7 +99,8 @@ jobs:
           test -s "$APK"
           BUILD_TOOLS="$ANDROID_HOME/build-tools/${ANDROID_BUILD_TOOLS}"
           "$BUILD_TOOLS/apksigner" verify --verbose "$APK"
-          unzip -l "$APK" | grep -q 'res/.*ic_launcher'
+          unzip -Z1 "$APK" > /tmp/apk-files.txt
+          grep -q 'res/.*ic_launcher' /tmp/apk-files.txt
           echo "APK installable and launcher icon packaged successfully."
 
       - name: Build signed release APK + AAB
