@@ -5,4 +5,4 @@
 - [x] Vérifier version, signature et ressources du logo dans l’APK final.
 - [x] Agrandir le logo officiel dans l’icône adaptative sans l’afficher au démarrage.
 - [x] Corriger et vérifier la génération APK GitHub pour les branches main et principal.
-- [ ] Supprimer l’échec trompeur de vérification du logo dans GitHub Actions.
+- [x] Supprimer l’échec trompeur de vérification du logo dans GitHub Actions.
